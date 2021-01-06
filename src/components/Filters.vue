@@ -241,15 +241,12 @@ export default {
     },
     "filters.location": function () {
       this.FilterCommunities();
-      console.log("location");
     },
     "filters.homeType": function () {
       this.FilterCommunities();
-      console.log("h");
     },
     "filters.amenities": function () {
       this.FilterCommunities();
-      console.log("a");
     },
   },
   methods: {
@@ -339,7 +336,6 @@ export default {
       //Deduping
       var uniqueComm = this.Dedupe(this.allCommunitites);
       this.allCommunitites = uniqueComm;
-      console.log(this.allCommunitites);
     },
     FilterCommunities() {
       //Start creating search/filters

@@ -113,7 +113,7 @@
                     <b-img
                       :src="modalData.ImageURL"
                       fluid
-                      alt="Responsive image"
+                      alt="img"
                     ></b-img>
                   </div>
                 </b-col>
@@ -123,22 +123,22 @@
 
                   <span>
                     <b class="info">Community: </b>
-                    <a :href="'http://localhost:8080/' + modalData.CommunityID"
+                    <a  :href="baseURL + '/' + modalData.CommunityID"
                       >{{ modalData.CommunityName }}
                     </a>
                   </span>
                 </b-col>
-                <!-- <b-col else class="col-sm-12">
+                <b-col v-else class="col-sm-12">
                    <b class="info"> Home Design Description </b>
                   <p>{{ modalData.Description }}</p>
 
                   <span>
                     <b class="info">Community: </b>
-                    <a :href="'http://localhost:8080/' + modalData.CommunityID"
+                    <a :href="baseURL + '/' + modalData.CommunityID"
                       >{{ modalData.CommunityName }}
                     </a>
                   </span>
-                </b-col> -->
+                </b-col>
               </b-row>
 
               <!-- <b-row>
@@ -233,6 +233,7 @@ export default {
       currentSearchFields: "",
       currentFilter: "",
       modalShow: false,
+      baseURL: window.location.origin,
     };
   },
   mounted: function () {
