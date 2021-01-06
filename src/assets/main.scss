@@ -1,0 +1,157 @@
+$KhovBlue:#86bcc2;
+$KhovOrange: #FB9536;
+$DarkGrey: #545b62;
+
+body{
+  font-family: Raleway,sans-serif;
+ 
+  #headerTitle{
+    color:white!important;
+    font-weight: lighter;
+  }
+
+  h5, h4, h3, h2, h1 {
+    color: $KhovBlue;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-top: 0;
+}
+}
+
+
+.btn {
+  background-color: $KhovBlue;
+  border-color: white;
+  border-width: 3%;
+
+  &:hover {
+    background-color:  $KhovOrange;
+    border: none;
+  }
+
+}
+
+.bg-info{
+  background-color: $KhovBlue!important;
+  }
+
+#Header {
+margin-bottom: 2%;
+}
+
+.card-body{
+  background-color: #f8f8f8
+}
+
+.custom-select{
+
+  position: relative;
+  text-align: center;
+  color: $DarkGrey;
+  border: $KhovBlue;
+  border-bottom-style: solid;
+  font-size: larger;
+
+    option {
+      color: $DarkGrey;
+
+      &:hover {
+        background-color: $KhovBlue;
+        color: white;
+      }
+
+      &:focus{
+        outline: none;
+      }
+    
+  }
+}
+
+
+.option-selected {
+  background-color: DodgerBlue;
+}
+
+
+#filterDiv{
+  margin-bottom: 2%;
+
+  #homeTypeBtns{
+    width: 100%;
+  }
+
+  .form-group{
+    text-align: left;
+    font-weight: bold;
+  }
+}
+
+.linkInfo {
+  float: right;
+  color: blue;
+}
+
+.roomCount{
+  width: 100%;
+}
+
+.right{
+  float: right;
+  padding-right: 2%;
+}
+
+.info{
+  font-size: larger;
+  width: 100%;
+}
+
+.list-group-item {
+      padding: 1%;
+      margin-right: 1rem;
+      border: none;
+}
+
+input:checked  {
+  color:$KhovOrange;
+  background-color: $KhovBlue;
+  font-style: normal;
+} 
+
+input[type=checkbox]:checked::after{
+    background-color: $KhovBlue;
+  
+}
+
+.b-pagination{
+  li {
+    
+    button[role="menuitem"]{
+      color: white;
+      background-color: $KhovBlue;
+      border-color: $KhovBlue;
+    }
+
+    button{
+      color: $KhovBlue;
+      border-radius: 10%;
+      border-color: $KhovBlue;
+
+      &:hover { 
+        background-color: $KhovOrange;
+      }
+    }
+  }
+}
+
+.page-item.active .page-link {
+  background-color: $DarkGrey;
+  border-color: $DarkGrey;
+ 
+}
+
+#filterBtn {
+  width: 100%;
+}
+
+
+
