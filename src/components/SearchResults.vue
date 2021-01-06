@@ -238,6 +238,7 @@ export default {
   },
   mounted: function () {
     var path = this.$route.path;
+    console.log(path);
 
     if (path != "") {
       var search = path.replace("/", "");
