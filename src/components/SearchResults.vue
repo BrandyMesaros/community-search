@@ -1,28 +1,5 @@
 <template>
   <div>
-    <hr />
-    <b-row>
-      <div class="col-md-7">
-        <h4>Home Designs</h4>
-      </div>
-
-      <div v-if="totalCount > 50" class="col-md-5">
-        <!--Paging-->
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="totalCount"
-          :per-page="50"
-          align="right"
-          last-number
-          first-number
-        ></b-pagination>
-      </div>
-    </b-row>
-
-    <p class="font-weight-light font-italic text-right">
-      {{ totalCount }} results
-    </p>
-
     <!--Modal-->
     <b-modal
       v-if="modalData"
@@ -33,175 +10,276 @@
     >
       <b-container>
         <div>
-          <b-tabs content-class="mt-3">
-            <b-tab class="Overview" title="Overview" active>
-              <!--Top Overview-->
-              <h5>Overview</h5>
-              <b-row class="col-sm-12">
-                <div class="info">
-                  <!--First Row-->
-                  <b-row>
-                    <b-col>
-                      <b-icon icon="tag-fill" variant="success"></b-icon>
-                      {{ modalData.Price | toCurrency }}
-                    </b-col>
+          <!--Top Overview-->
+          <h5>Overview</h5>
+          <b-row class="col-sm-12">
+            <div class="info">
+              <!--First Row-->
+              <b-row>
+                <b-col>
+                  <b-icon icon="tag-fill" variant="success"></b-icon>
+                  {{ modalData.Price | toCurrency }}
+                </b-col>
 
-                    <b-col>
-                      <b-icon icon="moon" variant="warning"></b-icon>
-                      {{ modalData.Bedrooms }} Bedroom(s)
-                    </b-col>
+                <b-col>
+                  <b-icon icon="moon" variant="warning"></b-icon>
+                  {{ modalData.Bedrooms }} Bedroom(s)
+                </b-col>
 
-                    <b-col>
-                      <b-icon icon="hammer" style="color: #fb9536"></b-icon>
-                      {{ modalData.Garages }} Garage(s)
-                    </b-col>
+                <b-col>
+                  <b-icon icon="hammer" style="color: #fb9536"></b-icon>
+                  {{ modalData.Garages }} Garage(s)
+                </b-col>
 
-                    <b-col v-if="modalData.IsAvailable == true">
-                      <b-icon
-                        icon="check-circle-fill"
-                        variant="success"
-                      ></b-icon>
-                      Available
-                    </b-col>
-                    <b-col v-else>
-                      <b-icon icon="x-circle-fill" variant="danger"></b-icon>
-                      Not Available
-                    </b-col>
-
-                    <b-col> </b-col>
-                  </b-row>
-
-                  <!--Second Row -->
-
-                  <b-row>
-                    <b-col>
-                      <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
-                      {{ modalData.Sqft }} sqft
-                    </b-col>
-
-                    <b-col>
-                      <b-icon icon="droplet-fill" variant="primary"></b-icon>
-                      {{ modalData.Bathrooms }} Bathroom(s)
-                    </b-col>
-
-                    <b-col>
-                      <b-icon
-                        icon="arrow-up-right-square-fill"
-                        style="color: #86bcc2"
-                      ></b-icon>
-                      {{ modalData.Stories }} Floors(s)
-                    </b-col>
-
-                    <b-col>
-                      <b-icon
-                        icon="house-door-fill"
-                        style="color: #fb9536"
-                      ></b-icon>
-                      {{ modalData.HomeDesignType }}
-                    </b-col>
-
-                    <b-col> </b-col>
-                  </b-row>
-                </div>
+                <b-col>
+                  <b-icon
+                    icon="house-door-fill"
+                    style="color: #fb9536"
+                  ></b-icon>
+                  {{ modalData.HomeDesignType }}
+                </b-col>
               </b-row>
 
-              <br />
+              <!--Second Row -->
 
               <b-row>
-                <b-col  v-if="modalData.ImageURL != null" class="col-sm-3">
-                  <div>
-                    <b-img
-                      :src="modalData.ImageURL"
-                      fluid
-                      alt="img"
-                    ></b-img>
-                  </div>
+                <b-col>
+                  <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
+                  {{ modalData.Sqft }} sqft
                 </b-col>
-                <b-col  v-if="modalData.ImageURL != null" class="col-sm-9">
-                  <b class="info"> Home Design Description </b>
-                  <p>{{ modalData.Description }}</p>
 
-                  <span>
-                    <b class="info">Community: </b>
-                    <a  :href="baseURL + '/' + modalData.CommunityID"
-                      >{{ modalData.CommunityName }}
-                    </a>
-                  </span>
+                <b-col>
+                  <b-icon icon="droplet-fill" variant="primary"></b-icon>
+                  {{ modalData.Bathrooms }} Bathroom(s)
                 </b-col>
-                <b-col v-else class="col-sm-12">
-                   <b class="info"> Home Design Description </b>
-                  <p>{{ modalData.Description }}</p>
 
-                  <span>
-                    <b class="info">Community: </b>
-                    <a :href="baseURL + '/' + modalData.CommunityID"
-                      >{{ modalData.CommunityName }}
-                    </a>
-                  </span>
+                <b-col>
+                  <b-icon
+                    icon="arrow-up-right-square-fill"
+                    style="color: #86bcc2"
+                  ></b-icon>
+                  {{ modalData.Stories }} Floors(s)
                 </b-col>
+
+                <b-col v-if="modalData.HasPromotions == true">
+                  <b-icon
+                    icon="house-door-fill"
+                    style="color: #fb9536"
+                  ></b-icon>
+                  {{ modalData.HasPromotions }}
+                </b-col>
+
+                <b-col v-else> </b-col>
               </b-row>
+            </div>
+          </b-row>
 
-              <!-- <b-row>
-                <b-col class="col-sm-12">
-                  <span>
-                    <b class="info">Community: </b>
-                    {{ modalData.CommunityName }}
-                  </span>
-                </b-col>
-              </b-row> -->
-            </b-tab>
+          <br />
 
-            <b-tab v-if="modalData.HasQMI == true" title="QMI">
-              <b-list-group v-if="modalData.HasQMI == true" id="qmiList">
-                <h5>Quick Move-In Homes</h5>
+          <b-row>
+            <b-col v-if="modalData.ImageURL != null" class="col-sm-3">
+              <div>
+                <b-img :src="modalData.ImageURL" fluid alt="img"></b-img>
+              </div>
+            </b-col>
+            <b-col v-if="modalData.ImageURL != null" class="col-sm-9">
+              <b class="info"> Home Design Description </b>
+              <p>{{ modalData.Description }}</p>
 
-                <b-list-group-item
-                  v-for="qmi in modalData.QMIs"
-                  :key="qmi.QmiID"
-                >
-                  <p>
-                    <b-icon icon="geo-alt-fill" variant="success"></b-icon>
-                    {{ qmi.QmiAddress }}
-                  </p>
+              <span>
+                <b class="info">Community: </b>
+                <a :href="baseURL + '/' + modalData.CommunityID"
+                  >{{ modalData.CommunityName }}
+                </a>
+              </span>
+            </b-col>
 
-                  <b class="info"> Description </b>
-                  <p>{{ qmi.QmiDescription }}</p>
-                </b-list-group-item>
-              </b-list-group>
-            </b-tab>
-          </b-tabs>
+            <b-col v-else class="col-sm-12">
+              <b class="info"> Home Design Description </b>
+              <p>{{ modalData.Description }}</p>
+
+              <span>
+                <b class="info">Community: </b>
+                <a :href="baseURL + '/' + modalData.CommunityID"
+                  >{{ modalData.CommunityName }}
+                </a>
+              </span>
+            </b-col>
+          </b-row>
         </div>
       </b-container>
     </b-modal>
 
-    <!--Result List-->
-    <b-list-group v-if="homes != null" id="homeList">
-      <b-list-group-item
-        v-for="home in homes"
-        @click="openModal(home)"
-        :key="home.HomeDesignNumber + home.CommunityID"
-        href="#"
-        class="flex-column align-items-start"
-      >
-        <!-- <b-img src= {{home.imageURL}} fluid alt="Responsive image"></b-img> -->
+  
+    <b-tabs v-model="tabIndex" content-class="mt-3">
+        <!--Community Results-->
+      <b-tab title="Community Results">
+        <b-row>
+          <div class="col-md-7">
+            <h4>Community Results</h4>
+          </div>
 
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1">
-            {{ home.CommunityName }} {{ home.HomeDesignName }}
-          </h5>
-          <small class="text-muted">{{ home.Price | toCurrency }}</small>
-        </div>
-        <small class="text-muted">{{ home.HomeDesignType }}</small> |
-        <small class="text-muted">{{ home.Bedrooms }} Bedrooms</small> |
-        <small class="text-muted">{{ home.Bathrooms }} Bathrooms</small> |
-        <small class="text-muted">{{ home.Sqft }} Sqft</small>
+          <div v-if="communitiesTotalCount > 50" class="col-md-5">
+            <!--Paging-->
+            <b-pagination
+              v-model="communitiesCurrentPage"
+              :total-rows="communitiesTotalCount"
+              :per-page="50"
+              align="right"
+              last-number
+              first-number
+            ></b-pagination>
+          </div>
+        </b-row>
 
-        <div v-html="home.Description"></div>
-      </b-list-group-item>
-    </b-list-group>
+        <p class="font-weight-light font-italic text-right">
+          {{ communitiesTotalCount }} results
+        </p>
 
-    <p v-if="homes.length == 0">No results found</p>
+        <b-list-group v-if="communities != null" id="communityList">
+          <b-list-group-item
+            v-for="(com, c) in communities"
+            @click="openModal(home)"
+            :key="com.CommunityID + 'COM' + c"
+            href="#"
+            class="flex-column align-items-start"
+          >
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">
+                {{ com.CommunityName }}
+              </h5>
+
+              {{ com.CommunityStatus }}
+            </div>
+
+            <div class="meta-data">
+              <b class="text-muted"
+                >{{ com.CommunityCity }}, {{ com.CommunityState }} |  {{ com.CommunityBrandName }} <span v-if="com != undefined && com.CommunityType != undefined"> | {{ com.CommunityType }} </span>
+              </b>
+            </div>
+
+            <div v-html="com.CommunityDescription"></div>
+            
+          </b-list-group-item>
+        </b-list-group>
+      </b-tab>
+
+      <!--Home Design Result List-->
+      <b-tab title="Home Design Results">
+        <b-row>
+          <div class="col-md-7">
+            <h4>Home Design Results</h4>
+          </div>
+
+          <div v-if="hdTotalCount > 50" class="col-md-5">
+            <!--Paging-->
+            <b-pagination
+              v-model="hdCurrentPage"
+              :total-rows="hdTotalCount"
+              :per-page="50"
+              align="right"
+              last-number
+              first-number
+            ></b-pagination>
+          </div>
+        </b-row>
+
+        <p class="font-weight-light font-italic text-right">
+          {{ hdTotalCount }} results
+        </p>
+
+        <b-list-group v-if="homes != null" id="homesList">
+          <div v-for="(com, i) in communities" :key="com.CommunityID + i">
+            <b-list-group-item
+              v-for="(home, h) in com.HomeDesigns"
+              @click="openModal(home)"
+              :key="home.HomeDesignNumber + h"
+              href="#"
+              class="flex-column align-items-start"
+            >
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">
+                  {{ home.HomeDesignName }} - {{ com.CommunityName }}
+                </h5>
+              </div>
+
+              <div class="meta-data">
+                <b class="text-muted">{{ home.HomeDesignType }}</b> |
+                <b class="text-muted">{{ home.Bedrooms }} Bedrooms</b> |
+                <b class="text-muted">{{ home.Bathrooms }} Bathrooms</b> |
+                <b class="text-muted">{{ home.Sqft }} Sqft</b> |
+                <b class="text-muted">{{ home.Price | toCurrency }}</b>
+              </div>
+
+              <div v-html="home.Description"></div>
+            </b-list-group-item>
+          </div>
+        </b-list-group>
+      </b-tab>
+
+      <!--QMI Result List-->
+      <b-tab title="QMI Results">
+        <b-row>
+          <div class="col-md-7">
+            <h4>QMI Results</h4>
+          </div>
+
+          <div v-if="qmiTotalCount > 50" class="col-md-5">
+            <!--Paging-->
+            <b-pagination
+              v-model="qmiCurrentPage"
+              :total-rows="qmiTotalCount"
+              :per-page="50"
+              align="right"
+              last-number
+              first-number
+            ></b-pagination>
+          </div>
+        </b-row>
+
+        <p class="font-weight-light font-italic text-right">
+          {{ qmiTotalCount }} results
+        </p>
+
+        <b-list-group v-if="QMIs != null" id="QMIList">
+          <div v-for="(home, h) in communities" :key="home.CommunityID + 'QMI' + h">
+            <div
+              v-for="(hd, i) in home.HomeDesigns"
+              :key="hd.HomeDesignNumber + 'QMI' + i"
+            >
+              <b-list-group-item
+                v-for="(QMI, qmi) in hd.QMIs"
+                @click="openModal(home)"
+                :key="QMI.QmiID + qmi"
+                href="#"
+                class="flex-column align-items-start"
+              >
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">
+                    {{ hd.HomeDesignName }} - {{ QMI.QmiAddress }} -
+                    {{ home.CommunityName }}
+                  </h5>
+                </div>
+
+                <div class="meta-data">
+                  <b class="text-muted">{{ hd.HomeDesignType }}</b> |
+                  <b class="text-muted">{{ hd.Bedrooms }} Bedrooms</b> |
+                  <b class="text-muted">{{ hd.Bathrooms }} Bathrooms</b> |
+                  <b class="text-muted">{{ hd.Sqft }} Sqft</b> |
+                  <b class="text-muted">{{ hd.Price | toCurrency }}</b>
+                </div>
+
+                <div v-html="QMI.QmiDescription"></div>
+              </b-list-group-item>
+            </div>
+          </div>
+        </b-list-group>
+      </b-tab>
+    </b-tabs>
   </div>
+
+  <!-- <p v-if="homes.length == 0">No results found</p>
+  </div> -->
 </template>
 
 <script>
@@ -222,23 +300,28 @@ export default {
   props: ["filterQuery", "searchQuery"],
   data() {
     return {
+      communities: [],
       homes: [],
-      allHomes: [],
+      QMIs: [],
       searchFilter: "",
       modalData: null,
       perPage: 100,
-      currentPage: 1,
-      totalCount: 0,
+      communitiesCurrentPage: 1,
+      hdCurrentPage: 1,
+      qmiCurrentPage: 1,
+      communitiesTotalCount: 0,
+      hdTotalCount: 0,
+      qmiTotalCount: 0,
       currentSearch: "",
       currentSearchFields: "",
       currentFilter: "",
       modalShow: false,
+      tabIndex: 0,
       baseURL: window.location.origin,
     };
   },
   mounted: function () {
     var path = this.$route.path;
-    console.log(path);
 
     if (path != "") {
       var search = path.replace("/", "");
@@ -253,7 +336,11 @@ export default {
   watch: {
     filterQuery: {
       handler(val) {
+        
+        console.log(this.filterQuery);
+        this.communities = [];
         this.homes = [];
+        this.QMIs = [];
 
         //Start creating search/filters
         var search = [];
@@ -271,9 +358,11 @@ export default {
           searchFields.push("CommunityCity, CommunityState");
         }
 
-        if (this.filterQuery.homeType != "All") {
-          search.push(this.filterQuery.homeType);
-          searchFields.push("HomeDesignType");
+        if (this.filterQuery.homeType.length != null && this.filterQuery.homeType.length > 0) {
+          for (var ii = 0; ii < this.filterQuery.homeType.length ; ii++) {
+          search.push(this.filterQuery.homeType[ii]);
+          }
+           searchFields.push("HomeDesigns/HomeDesignType");
         }
 
         if (
@@ -284,7 +373,7 @@ export default {
             search.push(this.filterQuery.amenities[i]);
           }
 
-          searchFields.push("Amenities");
+          searchFields.push("HomeDesigns/Amenities");
         }
 
         //filter
@@ -298,33 +387,33 @@ export default {
 
         if (this.filterQuery.bedrooms != "All") {
           if (filter != "") {
-            filter += " and Bedrooms ge " + this.filterQuery.bedrooms;
+            filter += " and HomeDesigns/any (h: h/Bedrooms ge " + this.filterQuery.bedrooms + ")";
           } else {
-            filter += "Bedrooms ge " + this.filterQuery.bedrooms;
+            filter += "HomeDesigns/any (h: h/Bedrooms ge " + this.filterQuery.bedrooms + ")";
           }
         }
 
         if (this.filterQuery.bathrooms != "All") {
           if (filter != "") {
-            filter += " and Bathrooms ge " + this.filterQuery.bathrooms;
+            filter += " and HomeDesigns/any (h: h/Bathrooms ge " + this.filterQuery.bathrooms + ")";
           } else {
-            filter += "Bathrooms ge " + this.filterQuery.bathrooms;
+            filter += "HomeDesigns/any (h: h/Bathrooms ge " + this.filterQuery.bathrooms + ")";
           }
         }
 
         if (this.filterQuery.garages != "All") {
           if (filter != "") {
-            filter += " and Garages ge " + this.filterQuery.garages;
+            filter += " and HomeDesigns/any (h: h/Garages ge " + this.filterQuery.garages + ")";
           } else {
-            filter += "Garages ge " + this.filterQuery.garages;
+            filter += "HomeDesigns/any (h: h/Garages ge " + this.filterQuery.garages + ")";
           }
         }
 
         if (this.filterQuery.stories != "All") {
           if (filter != "") {
-            filter += " and Stories ge " + this.filterQuery.stories;
+            filter += " and HomeDesigns/any (h: h/Stories ge " + this.filterQuery.stories + ")";
           } else {
-            filter += "Stories ge " + this.filterQuery.stories;
+            filter += "HomeDesigns/any (h: h/Stories ge " + this.filterQuery.stories + ")";
           }
         }
 
@@ -351,11 +440,19 @@ export default {
           }
         }
 
+
         this.currentSearch = searchString;
         this.currentSearchFields = searchFilterString;
         this.currentFilter = filter;
 
-        this.currentPage = 1;
+console.log(search);
+        console.log(this.currentSearch);
+         console.log(this.currentSearchFields);
+          console.log(this.currentFilter);
+
+        this.communitiesCurrentPage = 1;
+         this.hdCurrentPage = 1;
+          this.qmiCurrentPage = 1;
         this.GetHomes(
           this.currentSearch,
           this.currentSearchFields,
@@ -368,14 +465,40 @@ export default {
     },
     searchQuery: {
       handler(val) {
+        this.communities = [];
         this.homes = [];
+        this.QMIs = [];
         this.GetHomes(this.searchQuery, "", "", "", 0);
       },
       deep: true,
     },
-    currentPage: {
+    communitiesCurrentPage: {
       handler(val) {
-        var skip = 50 * (this.currentPage - 1);
+        var skip = 50 * (this.communitiesCurrentPage - 1);
+        this.GetHomes(
+          this.currentSearch,
+          this.currentSearchFields,
+          this.currentFilter,
+          "",
+          skip
+        );
+      },
+    },
+    HdCurrentPage: {
+      handler(val) {
+        var skip = 50 * (this.communitiesCurrentPage - 1);
+        this.GetHomes(
+          this.currentSearch,
+          this.currentSearchFields,
+          this.currentFilter,
+          "",
+          skip
+        );
+      },
+    },
+    QmiCurrentPage: {
+      handler(val) {
+        var skip = 50 * (this.communitiesCurrentPage - 1);
         this.GetHomes(
           this.currentSearch,
           this.currentSearchFields,
@@ -396,6 +519,7 @@ export default {
         orderby: orderBy,
         queryType: "full",
         count: "true",
+        top: 500,
         skip: skipNum,
       };
 
@@ -411,17 +535,106 @@ export default {
           { headers }
         )
         .then((response) => {
-          this.totalCount = response.data["@odata.count"];
+          this.communitiesTotalCount = response.data["@odata.count"];
+          this.homes = [];
+          this.QMIs = [];
 
           if (response.data.value != "") {
             var val = response.data.value;
-            this.homes = val;
+            this.communities = val;
+
+            for (var h = 0; h < this.communities.length; h++) {
+              
+              if (this.communities[h].HomeDesigns.length > 0) {
+                for (var hd = 0; hd < this.communities[h].HomeDesigns.length;hd++) {
+                  this.homes.push(this.communities[h].HomeDesigns[hd]);
+
+                  if (this.communities[h].HomeDesigns[hd].HasQMI == true) {
+                    for (var q = 0; q < this.communities[h].HomeDesigns[hd].QMIs.length; q++) {
+                      this.QMIs.push(this.communities[h].HomeDesigns[hd].QMIs[q]);
+                    }
+                  }
+                }
+              }
+
+           
+            }
+
+            if(this.homes != undefined){
+            this.hdTotalCount = this.homes.length;
+            }
+             if(this.QMIs != undefined){
+            this.qmiTotalCount = this.QMIs.length;
+             }
+
+// console.log(this.homes.length);
+// console.log(this.QMIs.length);
+// console.log(this.communities.length);
+
           }
         })
         .catch((error) => {
           console.log(error);
         });
     },
+
+    // FilterCommunities() {
+    //   //Start creating search/filters
+    //   var search = [];
+    //   var searchFields = [];
+
+    //   //search
+    //   if (this.filters.location != "") {
+    //     search.push(this.filters.location);
+    //     searchFields.push("CommunityCity, CommunityState");
+    //   }
+
+    //   if (this.filters.homeType != "All") {
+    //     search.push(this.filters.homeType);
+    //     searchFields.push("HomeDesignType");
+    //   }
+
+    //   if (
+    //     this.filters.amenities.length != null &&
+    //     this.filters.amenities.length > 0
+    //   ) {
+    //     for (var i = 0; i < this.filters.amenities.length; i++) {
+    //       search.push(this.filters.amenities[i]);
+    //     }
+
+    //     searchFields.push("Amenities");
+    //   }
+
+    //   var searchString = "";
+    //   var searchFilterString = "";
+
+    //   if (search != null) {
+    //     for (var j = 0; j < search.length; j++) {
+    //       searchString += search[j].toString();
+
+    //       if (j < search.length - 1) {
+    //         searchString += " AND ";
+    //       }
+    //     }
+    //   }
+
+    //   if (searchFields != null) {
+    //     for (var jj = 0; jj < searchFields.length; jj++) {
+    //       searchFilterString += searchFields[jj].toString();
+
+    //       if (jj < searchFields.length - 1) {
+    //         searchFilterString += ", ";
+    //       }
+    //     }
+    //   }
+
+    //   this.currentSearch = searchString;
+    //   this.currentSearchFields = searchFilterString;
+
+    //   this.allData = [];
+    //   // this.allCommunitites = [{ value: "", text: "All Communities" }];
+    //   this.GetHomes(this.currentSearch, this.currentSearchFields, "", "", 0);
+    // },
     openModal(data) {
       this.modalData = data;
       this.modalShow = !this.modalShow;

@@ -1,4 +1,5 @@
 $KhovBlue:#86bcc2;
+$KhovDarkBlue: #599097;
 $KhovOrange: #FB9536;
 $DarkGrey: #545b62;
 
@@ -19,25 +20,24 @@ body{
 }
 
 
+
 .btn {
   background-color: $KhovBlue;
   border-color: white;
   border-width: 3%;
+  
 
   &:hover {
     background-color:  $KhovOrange;
     border: none;
   }
 
+
 }
 
 .bg-info{
   background-color: $KhovBlue!important;
   }
-
-#Header {
-margin-bottom: 2%;
-}
 
 .card-body{
   background-color: #f8f8f8
@@ -149,9 +149,54 @@ input[type=checkbox]:checked::after{
  
 }
 
-#filterBtn {
-  width: 100%;
+
+.meta-data{
+  margin-bottom: 1%;
+
 }
 
+.dd {
+  width: 100%;
 
+  ul {
+    // position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, -338px, 0px);
+    padding-left: 3%;
+    width: 100%;
+    border:none;
+    box-shadow:1px 1px 5px $KhovBlue;
+  }
+}
 
+#clear {
+  background-color: white;
+  border-color: $KhovBlue;
+  color: $KhovBlue;
+  border-width: 2px;
+
+  &:hover{
+    background-color: $DarkGrey;
+    border-color: $DarkGrey;
+    border-width: 2px;
+
+  }
+  //width: 30%;
+}
+
+#save {
+  width: 20%;
+  margin-right: 1%;;
+ 
+}
+
+.badge {
+  background-color: $DarkGrey;
+  color: white;
+  font-weight: lighter;
+  padding: 1%;
+  margin: 1px;
+
+}
+
+a:hover{
+  color: $KhovOrange;
+}

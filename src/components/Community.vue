@@ -1,56 +1,7 @@
 <template>
-  <div v-if="modalData != null && ID != ''">
-    <b-row class="col-sm-12">
-      <h5>About Community {{ modalData.CommunityName }}</h5>
-      <br />
-    </b-row>
-
-    <b-row>
-      <b-col class="col-sm-9">
-        <b class="info"> Community Description </b>
-        <p>{{ modalData.CommunityDescription }}</p>
-
-        <b class="info"> Sales Office </b>
-        <p>
-          <b-icon icon="telephone-fill"></b-icon>
-          {{ modalData.CommunitySalesOfficePhone }} <br />
-          <b-icon icon="geo-alt-fill"></b-icon>
-          {{ modalData.CommunitySalesOfficeAddress }}
-        </p>
-      </b-col>
-      <b-col class="col-sm-3">
-        <b class="info"> Status </b>
-        <p>
-          {{ modalData.CommunityStatus }}
-        </p>
-
-        <b class="info"> Location </b>
-        <p>
-          <span v-if="modalData.CommunityAddress != null">
-            {{ modalData.CommunityAddress.Street }}
-            {{ modalData.CommunityAddress.City }}
-            {{ modalData.CommunityAddress.State.toUpperCase() }}
-            {{ modalData.CommunityAddress.Zip }}
-          </span>
-          <span v-else>
-            {{ modalData.CommunityCity }},
-            {{ modalData.CommunityState.toUpperCase() }}
-          </span>
-        </p>
-
-        <div v-if="modalData.Amenities.length > 0">
-          <b class="info"> Amenities </b>
-          <ul>
-            <li v-for="amm in modalData.Amenities" :key="amm">
-              {{ amm }}
-            </li>
-          </ul>
-        </div>
-      </b-col>
-    </b-row>
+<div>
   </div>
-  <div v-else>
-      </div>
+
 </template>
 
 <script>
