@@ -30,7 +30,7 @@
           </b-navbar-nav>
         </b-collapse> -->
 
-        <b-navbar-nav class="ml-auto">
+        <b-navbar-nav class="ml-auto" sticky=true>
           <b-nav-form>
             <b-form-input
               v-model="search"

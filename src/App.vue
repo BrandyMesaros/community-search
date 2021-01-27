@@ -10,18 +10,13 @@
         <Filters @filters="updateFilter" @communityID="updateCommunityID" />
       </div>
 
-      <b-container v-if="communityID!= null" class="container">
-        <Community :communityID="communityID" />
-      </b-container>
-
-      <b-container class="container">
         <SearchResults
           :filterQuery="filterQuery"
           :searchQuery="searchQuery"
           @communityInfo="communityData"
         />
         <br /><br />
-      </b-container>
+      
     </div>
 
   </div>
@@ -35,7 +30,6 @@ import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import Filters from "@/components/Filters.vue";
 import SearchResults from "@/components/SearchResults.vue";
 import Header from "@/components/Header.vue";
-import Community from "@/components/Community.vue";
 
 
 Vue.use(BootstrapVue);
@@ -49,7 +43,7 @@ export default {
     Filters,
     SearchResults,
     Header,
-    Community
+  
   },
   data: function () {
     return {

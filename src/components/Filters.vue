@@ -5,115 +5,185 @@
         <b-col>
           <h5>Filter</h5>
         </b-col>
+
+        <!-- <b-button v-b-toggle.collapse-1 variant="primary">Toggle Collapse</b-button> -->
+        <b-icon
+        v-if="visible == true"
+          v-b-toggle.collapse-filter
+          icon="arrow-up-circle"
+          font-scale="2"
+        ></b-icon>
+
+        <b-icon
+        v-if="visible == false"
+          v-b-toggle.collapse-filter
+          icon="arrow-down-circle"
+          font-scale="2"
+        ></b-icon>
       </b-row>
-      <b-row>
-        <!--First Column-->
-        <b-col class="col-sm-3">
-          <!--Location-->
-          <b-form-group label="Location" v-slot="{ ariaDescribedby }">
+
+      <b-collapse id="collapse-filter" v-model="visible" class="mt-2">
+        <b-row>
+          <!--First Column-->
+          <b-col class="col-lg-4">
+            <!--Location-->
+            <!-- <b-form-group label="Location" v-slot="{ ariaDescribedby }">
             <b-form-input
               v-model="filters.location"
               placeholder="Location"
               :aria-describedby="ariaDescribedby"
             ></b-form-input>
-          </b-form-group>
+          </b-form-group> -->
 
-          <b-form-group label="Radius">
-            <b-row>
-              <b-col md="9">
-                <b-form-input
-                  type="range"
-                  v-model="filters.radius"
-                  placeholder=""
-                ></b-form-input>
-              </b-col>
+            <b-form-group label="Location">
+              <b-form-input
+                list="locationList"
+                v-model="filters.location"
+              ></b-form-input>
 
-              <b-col md="3">
-                {{ filters.radius }}
-              </b-col>
-            </b-row>
-          </b-form-group>
+              <datalist id="locationList">
+                <option v-for="(data, index) in datalist" :key="data + index">
+                  {{ data }}
+                </option>
+              </datalist>
+            </b-form-group>
 
-          <!--Price-->
-          <b-form-group label="Price Range">
-            <b-row>
-              <b-col md="5">
-                <b-form-input
-                  v-model="filters.minPrice"
-                  placeholder="Min"
-                ></b-form-input>
-              </b-col>
-              <b-col md="2" class="text-center"> — </b-col>
-              <b-col md="5">
-                <b-form-input
-                  v-model="filters.maxPrice"
-                  placeholder="Max"
-                ></b-form-input>
-              </b-col>
-            </b-row>
-          </b-form-group>
+            <b-form-group label="Radius">
+              <b-row>
+                <b-col md="8">
+                  <b-form-input
+                    type="range"
+                    v-model="filters.radius"
+                    placeholder=""
+                  ></b-form-input>
+                </b-col>
 
-          <!--Sq Footage-->
-          <b-form-group label="Sq. Footage">
-            <b-row>
-              <b-col md="5">
-                <b-form-input
-                  v-model="filters.minSqFootage"
-                  placeholder="Min"
-                ></b-form-input>
-              </b-col>
-              <b-col md="2" class="text-center"> — </b-col>
-              <b-col md="5">
-                <b-form-input
-                  v-model="filters.maxSqFootage"
-                  placeholder="Max"
-                ></b-form-input>
-              </b-col>
-            </b-row>
-          </b-form-group>
-        </b-col>
+                <b-col md="4">
+                  <b-form-input v-model="filters.radius" type="number">
+                    {{ filters.radius }}
+                  </b-form-input>
+                </b-col>
+              </b-row>
+            </b-form-group>
 
-        <!--Second Column-->
-        <b-col class="col-sm-3">
-          <!--Brand Select-->
-          <b-form-group label="Brand Name" v-slot="{ ariaDescribedby }">
-            <b-form-checkbox-group
-              v-model="filters.brand"
-              :options="brands"
-              :aria-describedby="ariaDescribedby"
-              name="brandButtons"
-              buttons
-              stacked
-            ></b-form-checkbox-group>
-          </b-form-group>
+            <!--Price-->
+            <b-form-group label="Price Range">
+              <b-form-input
+                type="number"
+                v-model="filters.minPrice"
+                placeholder="Min Price"
+              ></b-form-input>
+              <b-form-input
+                type="number"
+                v-model="filters.maxPrice"
+                placeholder="Max Price"
+              ></b-form-input>
+            </b-form-group>
 
-          <!--Move In Date-->
-          <b-form-group label="Move In Date">
-            <b-form-input
-              id="datePicker"
-              v-model="filters.moveInDate"
-              type="date"
-            ></b-form-input>
-          </b-form-group>
+            <!--Home Types-->
+            <b-form-group label="Home Type">
+              <b-dropdown
+                id="homeTypeDropdown"
+                text="Please select..."
+                ref="dropdown"
+                class="dd"
+              >
+                <b-dropdown-form>
+                  <b-form-group v-slot="{ ariaDescribedby }">
+                    <b-form-checkbox-group
+                      v-model="filters.homeType"
+                      :options="homeTypes"
+                      :aria-describedby="ariaDescribedby"
+                      stacked
+                      switches
+                    ></b-form-checkbox-group>
+                  </b-form-group>
+                </b-dropdown-form>
+              </b-dropdown>
+              <a
+                v-for="(ht, index) in filters.homeType"
+                :key="ht + index"
+                href="#"
+                class="badge"
+                @click="removeHT(index)"
+              >
+                {{ ht }}
+              </a>
+            </b-form-group>
+          </b-col>
 
-          <!--Quick Move in Home-->
-          <b-form-group>
-            <b-form-checkbox
-              id="QMIcheckbox"
-              v-model="filters.QMIStatus"
-              name="QMICheckbox"
-              value="yes_QMI"
-              unchecked-value="no_QMI"
-            >
-              Quick Move in Homes
-            </b-form-checkbox>
-          </b-form-group>
-        </b-col>
+          <!--Second Column-->
+          <b-col class="col-lg-4">
+            <!--Bedroom-->
+            <b-form-group label="Bedrooms" v-slot="{ ariaDescribedby }">
+              <b-form-radio-group
+                id="BedroomBtns"
+                class="roomCount"
+                v-model="filters.bedrooms"
+                :options="count"
+                :aria-describedby="ariaDescribedby"
+                name="radios-btn-default"
+                buttons
+              ></b-form-radio-group>
+            </b-form-group>
 
-        <!--Third Column-->
-        <b-col class="col-sm-3">
-          <!--Community Type Select-->
-          <!-- <b-form-group label="Community Type" v-slot="{ ariaDescribedby }">
+            <!--Bathroom-->
+            <b-form-group label="Bathrooms" v-slot="{ ariaDescribedby }">
+              <b-form-radio-group
+                id="BathroomBtns"
+                class="roomCount"
+                v-model="filters.bathrooms"
+                :options="count"
+                :aria-describedby="ariaDescribedby"
+                name="radios-btn-default"
+                buttons
+              ></b-form-radio-group>
+            </b-form-group>
+
+            <!--Garages-->
+            <b-form-group label="Garages" v-slot="{ ariaDescribedby }">
+              <b-form-radio-group
+                id="GarageBtns"
+                class="roomCount"
+                v-model="filters.garages"
+                :options="count"
+                :aria-describedby="ariaDescribedby"
+                name="radios-btn-default"
+                buttons
+              ></b-form-radio-group>
+            </b-form-group>
+
+            <!--Stories-->
+            <b-form-group label="Stories" v-slot="{ ariaDescribedby }">
+              <b-form-radio-group
+                id="StoriesBtns"
+                class="roomCount"
+                v-model="filters.stories"
+                :options="count"
+                :aria-describedby="ariaDescribedby"
+                name="radios-btn-default"
+                buttons
+              ></b-form-radio-group>
+            </b-form-group>
+
+            <!--Quick Move in Home-->
+            <b-form-group>
+              <b-form-checkbox
+                id="QMIcheckbox"
+                v-model="filters.QMIStatus"
+                name="QMICheckbox"
+                value="yes_QMI"
+                unchecked-value="no_QMI"
+              >
+                Quick Move in Homes
+              </b-form-checkbox>
+            </b-form-group>
+          </b-col>
+
+          <!--Third Column-->
+          <b-col class="col-lg-4">
+            <!--Community Type Select-->
+            <!-- <b-form-group label="Community Type" v-slot="{ ariaDescribedby }">
             <b-form-radio-group
               id="communityTypeBtns"
               v-model="filters.communityType"
@@ -124,149 +194,121 @@
             ></b-form-radio-group>
           </b-form-group> -->
 
-          <!--Home Types-->
-          <b-form-group label="Home Type">
-            <b-dropdown
-              id="homeTypeDropdown"
-              text="Please select..."
-              ref="dropdown"
-              class="dd"
-            >
-              <b-dropdown-form>
-                <b-form-group v-slot="{ ariaDescribedby }">
-                  <b-form-checkbox-group
-                    v-model="filters.homeType"
-                    :options="homeTypes"
-                    :aria-describedby="ariaDescribedby"
-                    stacked
-                    switches
-                  ></b-form-checkbox-group>
-                </b-form-group>
-              </b-dropdown-form>
-            </b-dropdown>
-            <a
-              v-for="(ht, index) in filters.homeType"
-              :key="ht + index"
-              href="#"
-              class="badge"
-              @click="removeHT(index)"
-            >
-              {{ ht }}
-            </a>
-          </b-form-group>
+            <!--Sq Footage-->
+            <b-form-group label="Sq. Footage">
+              <b-form-input
+                type="number"
+                v-model="filters.minSqFootage"
+                placeholder="Min Sqft"
+              ></b-form-input>
+              <b-form-input
+                type="number"
+                v-model="filters.maxSqFootage"
+                placeholder="Max Sqft"
+              ></b-form-input>
+            </b-form-group>
 
-          <!--Amenities-->
-          <b-form-group label="Amenities">
-            <b-dropdown
-              id="ammenityDropdown"
-              text="Please select..."
-              ref="dropdown"
-              class="dd"
-            >
-              <b-dropdown-form>
-                <b-form-group v-slot="{ ariaDescribedby }">
-                  <b-form-checkbox-group
-                    v-model="filters.amenities"
-                    :options="allAmenities"
-                    :aria-describedby="ariaDescribedby"
-                    stacked
-                    switches
-                  ></b-form-checkbox-group>
-                </b-form-group>
-              </b-dropdown-form>
-            </b-dropdown>
+            <!--Move In Date-->
+            <b-form-group label="Move In Date">
+              <b-form-input
+                id="datePicker"
+                v-model="filters.moveInDate"
+                type="date"
+              ></b-form-input>
+            </b-form-group>
 
-            <a
-              v-for="(amm, index) in filters.amenities"
-              :key="amm + index"
-              href="#"
-              class="badge"
-              @click.self="removeAmm(index)"
-            >
-              {{ amm }}
-            </a>
-          </b-form-group>
-        </b-col>
-
-        <!--Fourth Column-->
-        <b-col class="col-sm-3">
-          <!--Bedroom-->
-          <b-form-group label="Bedrooms" v-slot="{ ariaDescribedby }">
-            <b-form-radio-group
-              id="BedroomBtns"
-              class="roomCount"
-              v-model="filters.bedrooms"
-              :options="count"
+            <!--Brand Select-->
+            <b-form-group label="Brand Name">
+              <!-- <b-form-checkbox-group
+              v-model="filters.brand"
+              :options="brands"
               :aria-describedby="ariaDescribedby"
-              name="radios-btn-default"
+              name="brandButtons"
               buttons
-            ></b-form-radio-group>
-          </b-form-group>
+              stacked
+            ></b-form-checkbox-group> -->
+              <b-dropdown
+                id="brandDropdown"
+                text="Please select..."
+                ref="dropdown"
+                class="dd"
+              >
+                <b-dropdown-form>
+                  <b-form-group v-slot="{ ariaDescribedby }">
+                    <b-form-checkbox-group
+                      v-model="filters.brand"
+                      :options="brands"
+                      :aria-describedby="ariaDescribedby"
+                      stacked
+                      switches
+                    ></b-form-checkbox-group>
+                  </b-form-group>
+                </b-dropdown-form>
+              </b-dropdown>
 
-          <!--Bathroom-->
-          <b-form-group label="Bathrooms" v-slot="{ ariaDescribedby }">
-            <b-form-radio-group
-              id="BathroomBtns"
-              class="roomCount"
-              v-model="filters.bathrooms"
-              :options="count"
-              :aria-describedby="ariaDescribedby"
-              name="radios-btn-default"
-              buttons
-            ></b-form-radio-group>
-          </b-form-group>
+              <a
+                v-for="(brand, index) in filters.brand"
+                :key="brand + index"
+                href="#"
+                class="badge"
+                @click.self="removeBrand(index)"
+              >
+                {{ brand }}
+              </a>
+            </b-form-group>
 
-          <!--Garages-->
-          <b-form-group label="Garages" v-slot="{ ariaDescribedby }">
-            <b-form-radio-group
-              id="GarageBtns"
-              class="roomCount"
-              v-model="filters.garages"
-              :options="count"
-              :aria-describedby="ariaDescribedby"
-              name="radios-btn-default"
-              buttons
-            ></b-form-radio-group>
-          </b-form-group>
+            <!--Amenities-->
+            <b-form-group label="Amenities">
+              <b-dropdown
+                id="ammenityDropdown"
+                text="Please select..."
+                ref="dropdown"
+                class="dd"
+              >
+                <b-dropdown-form>
+                  <b-form-group v-slot="{ ariaDescribedby }">
+                    <b-form-checkbox-group
+                      v-model="filters.amenities"
+                      :options="allAmenities"
+                      :aria-describedby="ariaDescribedby"
+                      stacked
+                      switches
+                    ></b-form-checkbox-group>
+                  </b-form-group>
+                </b-dropdown-form>
+              </b-dropdown>
 
-          <!--Stories-->
-          <b-form-group label="Stories" v-slot="{ ariaDescribedby }">
-            <b-form-radio-group
-              id="StoriesBtns"
-              class="roomCount"
-              v-model="filters.stories"
-              :options="count"
-              :aria-describedby="ariaDescribedby"
-              name="radios-btn-default"
-              buttons
-            ></b-form-radio-group>
-          </b-form-group>
-        </b-col>
-      </b-row>
+              <a
+                v-for="(amm, index) in filters.amenities"
+                :key="amm + index"
+                href="#"
+                class="badge"
+                @click.self="removeAmm(index)"
+              >
+                {{ amm }}
+              </a>
+            </b-form-group>
+          </b-col>
+        </b-row>
 
-      <hr />
+        <hr />
 
-      <b-row>
-        <b-col class="col-md-6">
-          <b-button
-            id="save"
-            size="lg"
-            v-on:click="SaveFilters"
-          >
-            Save
-          </b-button>
+        <b-row>
+          <b-col class="col-md-6">
+            <b-button id="save" size="lg" v-on:click="SaveFilters">
+              Save
+            </b-button>
 
-          <b-button id="clear" size="lg" v-on:click="clear"> Clear </b-button>
-        </b-col>
+            <b-button id="clear" size="lg" v-on:click="clear"> Clear </b-button>
+          </b-col>
 
-        <b-col class="col-md-6 text-right">
-          <small v-if="created != undefined">Created: {{ this.created }}</small>
-          <br />
-          <small v-if="lastUpdated != undefined"
-            >Updated: {{ this.lastUpdated }}
-          </small>
-        </b-col>
-      </b-row>
+          <b-col class="col-md-6 text-right">
+            <small v-if="created != ''">Created: {{ created }}</small>
+            <br />
+            <small v-if="lastUpdated != ''">Updated: {{ lastUpdated }} </small>
+          </b-col>
+        </b-row>
+      </b-collapse>
     </b-card>
   </div>
 </template>
@@ -307,6 +349,8 @@ export default {
       allCommunitites: [{ value: "", text: "All Communities" }],
       communityID: "",
       communityType: [],
+      visible: true,
+      datalist: [],
       homeTypes: [],
       brands: [
         {
@@ -351,9 +395,7 @@ export default {
     };
   },
   beforeMount() {
-    this.GetAmmenities();
-    this.GetCommunityType();
-    this.GetHomeType();
+    this.GetAllFacets();
   },
   mounted: function () {
     var path = this.$route.path;
@@ -363,7 +405,6 @@ export default {
       this.filters.communityID = this.communityID;
     }
 
-    console.log(this.$route.query.email);
     if (this.$route.query.id != undefined) {
       this.GetFilters();
     }
@@ -457,55 +498,6 @@ export default {
 
       return val;
     },
-    async GetAmmenities() {
-      var body = {
-        facets: ["HomeDesigns/Amenities"],
-      };
-
-      var info = await this.SearchAPI(body);
-      if (info != null || info != undefined) {
-        var val = info["@search.facets"];
-        var amm = val["HomeDesigns/Amenities"];
-
-        for (var a in amm) {
-          this.allAmenities.push(amm[a].value);
-        }
-      }
-    },
-    async GetCommunityType() {
-      var body = {
-        facets: ["CommunityType"],
-      };
-
-      var info = await this.SearchAPI(body);
-      if (info != null || info != undefined) {
-        var val = info["@search.facets"];
-        var com = val["CommunityType"];
-
-        for (var c in com) {
-          if (com[c].value != "") {
-            this.communityType.push(com[c].value);
-          }
-        }
-      }
-    },
-    async GetHomeType() {
-      var body = {
-        facets: ["HomeDesigns/HomeDesignType"],
-      };
-
-      var info = await this.SearchAPI(body);
-      if (info != null || info != undefined) {
-        var val = info["@search.facets"];
-        var hd = val["HomeDesigns/HomeDesignType"];
-
-        for (var h in hd) {
-          if (hd[h].value != "") {
-            this.homeTypes.push(hd[h].value);
-          }
-        }
-      }
-    },
     async GetFilters() {
       var method = "getFilters";
       var ID = this.filters.id;
@@ -519,10 +511,8 @@ export default {
         "')&$select=*";
       var body = "";
 
-console.log(header);
+      console.log(header);
       var info = await this.TableAPI(method, header, body);
-
-      console.log(info);
 
       if (info != undefined && info.value.length > 0) {
         var saved = info.value[0];
@@ -542,28 +532,73 @@ console.log(header);
         this.filters.brand = saved.Brand.split(",");
         this.filters.moveInDate = saved.MoveInDate;
         this.filters.homeType = saved.HomeType.split(",");
-        this.partitionKey = saved.PartitionKey;
+        this.rowKey = saved.RowKey;
         this.lastUpdated = saved.updatedDateTime;
         this.created = saved.createdDateTime;
       }
 
-      console.log(this.lastUpdated);
-      console.log(this.created);
+      return this.rowKey;
+    },
+    async GetAllFacets() {
+      var body = {
+        facets: [
+          "HomeDesigns/Amenities, count:50",
+          "CommunityType, count:15",
+          "HomeDesigns/HomeDesignType, count:15",
+          "CommunityPlace, count:200",
+        ],
+      };
 
-      return this.partitionKey;
+      var info = await this.SearchAPI(body);
+
+      if (info != null || info != undefined) {
+        var val = info["@search.facets"];
+        console.log(val);
+
+        //Ammenities
+        var amm = val["HomeDesigns/Amenities"];
+        for (var a in amm) {
+          this.allAmenities.push(amm[a].value);
+        }
+
+        //Community Type
+        var com = val["CommunityType"];
+
+        for (var c in com) {
+          if (com[c].value != "") {
+            this.communityType.push(com[c].value);
+          }
+        }
+
+        //HomeDesign Type
+        var hd = val["HomeDesigns/HomeDesignType"];
+
+        for (var h in hd) {
+          if (hd[h].value != "") {
+            this.homeTypes.push(hd[h].value);
+          }
+        }
+
+        //DataList
+        var places = val["CommunityPlace"];
+
+        for (var n in places) {
+          this.datalist.push(places[n].value);
+        }
+      }
     },
     async SaveFilters() {
       var created;
 
-      if (this.partitionKey == undefined || this.partitionKey == "") {
-        this.partitionKey = this.CreateUUID();
+      if (this.rowKey == undefined || this.rowKey == "") {
+        this.rowKey = this.CreateUUID();
         created = Date(Date.now());
       }
 
-      var PK = this.partitionKey;
+      var RK = this.rowKey;
 
       var method = "merge";
-      var header = "(PartitionKey='" + PK + "', RowKey='')";
+      var header = "(PartitionKey='Search', RowKey='" + RK + "')";
       var body = {
         Location: this.filters.location,
         Radius: this.filters.radius,
@@ -581,12 +616,12 @@ console.log(header);
         MoveInDate: this.filters.moveInDate,
         HomeType: this.filters.homeType.join(),
         ID: this.filters.id,
-        Email: "Test@test.com2",
+        Email: this.filters.email,
         communityID: this.filters.communityID,
         createdDateTime: created,
         updatedDateTime: Date(Date.now()),
-        PartitionKey: PK,
-        RowKey: "",
+        PartitionKey: "Search",
+        RowKey: RK,
       };
 
       var info = await this.TableAPI(method, header, body);
@@ -616,6 +651,9 @@ console.log(header);
     },
     removeHT(index) {
       this.filters.homeType.splice(index, 1);
+    },
+    removeBrand(index) {
+      this.filters.brand.splice(index, 1);
     },
     clear() {
       this.filters.location = "";
