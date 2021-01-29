@@ -1,12 +1,12 @@
 <template>
   <div id="results">
-    <b-container fluid>
+    <b-container fluid id="searchResults">
 
 <b-row>
     <b-col id="listOfResults" class="col-sm-12">
       <b-tabs v-model="tabIndex" content-class="mt-3" justified>
         <!--Community Results-->
-        <b-tab title="Community Results">
+        <b-tab title="Community Results" lazy>
           <b-row>
             <div class="col-md-7">
               <h4>Community Results</h4>
@@ -66,7 +66,7 @@
         </b-tab>
 
         <!--Home Design Result List-->
-        <b-tab title="Home Design Results">
+        <b-tab title="Home Design Results" lazy>
           <b-row>
             <div class="col-md-7">
               <h4>Home Design Results</h4>
@@ -119,7 +119,7 @@
         </b-tab>
 
         <!--QMI Result List-->
-        <b-tab title="QMI Results">
+        <b-tab title="QMI Results" lazy>
           <b-row>
             <div class="col-md-7">
               <h4>QMI Results</h4>
@@ -183,8 +183,10 @@
       </b-col>
 
       <b-col class="col-sm-6">
+       <affix class="sidebar-menu" relative-element-selector="#searchResults" >
       <b-sidebar
         id="sidebar-right"
+        role="presentation"
         v-model="visible"
         v-if="infoData != null"
         right
@@ -229,8 +231,8 @@
 
         </div>
       </b-sidebar>
+      </affix>
       </b-col>
-
             </b-row>
 
 
@@ -696,7 +698,6 @@ export default {
       };
 
       var response = await this.SearchAPI(body);
-      console.log(response);
 
       if(response != undefined){
 

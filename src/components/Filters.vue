@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-card>
+    <b-card id="filters">
       <b-row>
         <b-col>
           <h5>Filter</h5>

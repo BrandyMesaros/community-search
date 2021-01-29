@@ -228,30 +228,33 @@ a:hover{
 }
 
 
-.my-sidebar.b-sidebar-outer {
-  position: absolute !important;
-  height: 100% !important;
+.b-sidebar-outer {
+  // position: absolute !important;
+  // height: 100% !important;
   // left: 50%;
   z-index: 5;
+  position: initial !important;
 
 }
 
-.my-sidebar .b-sidebar {
-  position: absolute !important;
-  height: 100% !important;
+ .b-sidebar {
+  // position: absolute !important;
+  // height: 100% !important;
   z-index: 5;
+  position: relative !important;
+  width: 100%;
 }
 
 
-.vue-affix {
-  position: relative;
-}
-.affix {
-  position: fixed;
-}
-.affix-bottom {
-  position: relative;
-}
+// .vue-affix {
+//   position: relative;
+// }
+// .affix {
+//   position: fixed;
+// }
+// .affix-bottom {
+//   position: relative;
+// }
 
 .notALink{
   cursor:pointer;
