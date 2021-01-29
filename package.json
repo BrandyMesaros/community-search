@@ -19,6 +19,7 @@
     "popper.js": "^1.16.1",
     "regenerator-runtime": "^0.13.7",
     "vue": "^2.6.12",
+    "vue-affix": "^0.5.2",
     "vue-axios": "^3.2.0",
     "vue-router": "^3.4.9"
   },

@@ -6,16 +6,15 @@
           <h5>Filter</h5>
         </b-col>
 
-        <!-- <b-button v-b-toggle.collapse-1 variant="primary">Toggle Collapse</b-button> -->
         <b-icon
-        v-if="visible == true"
+          v-if="visible == true"
           v-b-toggle.collapse-filter
           icon="arrow-up-circle"
           font-scale="2"
         ></b-icon>
 
         <b-icon
-        v-if="visible == false"
+          v-if="visible == false"
           v-b-toggle.collapse-filter
           icon="arrow-down-circle"
           font-scale="2"
@@ -24,31 +23,55 @@
 
       <b-collapse id="collapse-filter" v-model="visible" class="mt-2">
         <b-row>
-          <!--First Column-->
-          <b-col class="col-lg-4">
+          <!--FIRST COLUMN-->
+          <b-col class="col-sm-4">
             <!--Location-->
-            <!-- <b-form-group label="Location" v-slot="{ ariaDescribedby }">
-            <b-form-input
-              v-model="filters.location"
-              placeholder="Location"
-              :aria-describedby="ariaDescribedby"
-            ></b-form-input>
-          </b-form-group> -->
-
-            <b-form-group label="Location">
+       
+       <b-form-group label="Location">
+            <b-input-group class="mb-3">
               <b-form-input
                 list="locationList"
                 v-model="filters.location"
+                size="sm"
               ></b-form-input>
 
-              <datalist id="locationList">
-                <option v-for="(data, index) in datalist" :key="data + index">
-                  {{ data }}
-                </option>
-              </datalist>
-            </b-form-group>
+              <b-input-group-append>
+                <b-button
+                  size="sm"
+                  text="Search"
+                  v-on:click="GetCoordinates()"
+                  @click="$bvToast.show('DidYouMean')"
+                  >Search</b-button
+                >
+              </b-input-group-append>
+            </b-input-group>
 
-            <b-form-group label="Radius">
+            <datalist id="locationList">
+              <option v-for="(data, index) in datalist" :key="data + index">
+                {{ data }}
+              </option>
+            </datalist>
+
+            <b-toast id="DidYouMean" title="Suggestions:" static no-auto-hide v-model="toast">
+              <div v-if="suggested.length > 0">
+                <small
+                  v-for="(s, i) in suggested"
+                  :key="s + i"
+                  class="notALink"
+                  @click="
+                    $bvToast.hide('DidYouMean');
+                    populateLocation(s);
+                  "
+                  ><i> {{ s }} <br /></i
+                ></small>
+              </div>
+              <div v-else>
+                <small> <i> No suggestions </i></small>
+              </div>
+            </b-toast>
+       </b-form-group>
+
+            <b-form-group label="Radius (miles)">
               <b-row>
                 <b-col md="8">
                   <b-form-input
@@ -58,7 +81,8 @@
                   ></b-form-input>
                 </b-col>
 
-                <b-col md="4">
+                <b-col v-if="filters.radius == 0" md="4"> NONE </b-col>
+                <b-col v-else md="4">
                   <b-form-input v-model="filters.radius" type="number">
                     {{ filters.radius }}
                   </b-form-input>
@@ -72,11 +96,13 @@
                 type="number"
                 v-model="filters.minPrice"
                 placeholder="Min Price"
+                size="sm"
               ></b-form-input>
               <b-form-input
                 type="number"
                 v-model="filters.maxPrice"
                 placeholder="Max Price"
+                size="sm"
               ></b-form-input>
             </b-form-group>
 
@@ -100,20 +126,19 @@
                   </b-form-group>
                 </b-dropdown-form>
               </b-dropdown>
-              <a
+              <span
                 v-for="(ht, index) in filters.homeType"
                 :key="ht + index"
-                href="#"
-                class="badge"
+                class="badge notALink"
                 @click="removeHT(index)"
               >
                 {{ ht }}
-              </a>
+              </span>
             </b-form-group>
           </b-col>
 
           <!--Second Column-->
-          <b-col class="col-lg-4">
+          <b-col class="col-sm-4">
             <!--Bedroom-->
             <b-form-group label="Bedrooms" v-slot="{ ariaDescribedby }">
               <b-form-radio-group
@@ -124,6 +149,7 @@
                 :aria-describedby="ariaDescribedby"
                 name="radios-btn-default"
                 buttons
+                size="sm"
               ></b-form-radio-group>
             </b-form-group>
 
@@ -137,6 +163,7 @@
                 :aria-describedby="ariaDescribedby"
                 name="radios-btn-default"
                 buttons
+                size="sm"
               ></b-form-radio-group>
             </b-form-group>
 
@@ -150,6 +177,7 @@
                 :aria-describedby="ariaDescribedby"
                 name="radios-btn-default"
                 buttons
+                size="sm"
               ></b-form-radio-group>
             </b-form-group>
 
@@ -163,6 +191,7 @@
                 :aria-describedby="ariaDescribedby"
                 name="radios-btn-default"
                 buttons
+                size="sm"
               ></b-form-radio-group>
             </b-form-group>
 
@@ -181,30 +210,20 @@
           </b-col>
 
           <!--Third Column-->
-          <b-col class="col-lg-4">
-            <!--Community Type Select-->
-            <!-- <b-form-group label="Community Type" v-slot="{ ariaDescribedby }">
-            <b-form-radio-group
-              id="communityTypeBtns"
-              v-model="filters.communityType"
-              :options="communityType"
-              :aria-describedby="ariaDescribedby"
-              name="radios-btn-default"
-              buttons
-            ></b-form-radio-group>
-          </b-form-group> -->
-
+          <b-col class="col-sm-4">
             <!--Sq Footage-->
             <b-form-group label="Sq. Footage">
               <b-form-input
                 type="number"
                 v-model="filters.minSqFootage"
                 placeholder="Min Sqft"
+                size="sm"
               ></b-form-input>
               <b-form-input
                 type="number"
                 v-model="filters.maxSqFootage"
                 placeholder="Max Sqft"
+                size="sm"
               ></b-form-input>
             </b-form-group>
 
@@ -214,19 +233,12 @@
                 id="datePicker"
                 v-model="filters.moveInDate"
                 type="date"
+                size="sm"
               ></b-form-input>
             </b-form-group>
 
             <!--Brand Select-->
             <b-form-group label="Brand Name">
-              <!-- <b-form-checkbox-group
-              v-model="filters.brand"
-              :options="brands"
-              :aria-describedby="ariaDescribedby"
-              name="brandButtons"
-              buttons
-              stacked
-            ></b-form-checkbox-group> -->
               <b-dropdown
                 id="brandDropdown"
                 text="Please select..."
@@ -246,15 +258,14 @@
                 </b-dropdown-form>
               </b-dropdown>
 
-              <a
+              <span
                 v-for="(brand, index) in filters.brand"
                 :key="brand + index"
-                href="#"
-                class="badge"
+                class="badge notALink"
                 @click.self="removeBrand(index)"
               >
                 {{ brand }}
-              </a>
+              </span>
             </b-form-group>
 
             <!--Amenities-->
@@ -278,15 +289,14 @@
                 </b-dropdown-form>
               </b-dropdown>
 
-              <a
+              <span
                 v-for="(amm, index) in filters.amenities"
                 :key="amm + index"
-                href="#"
-                class="badge"
+                class="badge notALink"
                 @click.self="removeAmm(index)"
               >
                 {{ amm }}
-              </a>
+              </span>
             </b-form-group>
           </b-col>
         </b-row>
@@ -350,6 +360,7 @@ export default {
       communityID: "",
       communityType: [],
       visible: true,
+      toast: false,
       datalist: [],
       homeTypes: [],
       brands: [
@@ -370,7 +381,9 @@ export default {
         { text: "3+", value: "3" },
       ],
       filters: {
-        location: "",
+        location: null,
+        locationLong: "",
+        locationLat: "",
         radius: "0",
         minPrice: "",
         maxPrice: "",
@@ -392,6 +405,8 @@ export default {
       partitionKey: "",
       created: "",
       lastUpdated: "",
+      suggested: [],
+      oldLocation: "",
     };
   },
   beforeMount() {
@@ -414,7 +429,17 @@ export default {
   },
   watch: {
     filters: {
-      handler(val) {
+      async handler(val) {
+        if (
+          this.filters.location != "" &&
+          this.filters.location != this.oldLocation
+        ) {
+          await this.getLongLat(this.filters.location);
+        }
+        else if (this.filters.location == "" ) {
+          this.toast = false;
+        }
+
         this.$emit("filters", this.filters);
         this.$emit("communityID", this.filters.communityID);
       },
@@ -511,7 +536,6 @@ export default {
         "')&$select=*";
       var body = "";
 
-      console.log(header);
       var info = await this.TableAPI(method, header, body);
 
       if (info != undefined && info.value.length > 0) {
@@ -553,7 +577,7 @@ export default {
 
       if (info != null || info != undefined) {
         var val = info["@search.facets"];
-        console.log(val);
+        // console.log(val);
 
         //Ammenities
         var amm = val["HomeDesigns/Amenities"];
@@ -655,8 +679,58 @@ export default {
     removeBrand(index) {
       this.filters.brand.splice(index, 1);
     },
+    populateLocation(value) {
+      this.filters.location = value;
+    },
+    GetCoordinates() {
+      this.suggested = [];
+
+      var key = "jHXzLOl_rAm6GnrNK-bnneuN_FO2IYRcTNv8cMEZBtw";
+      var url =
+        "https://atlas.microsoft.com/search/address/json?subscription-key=" +
+        key +
+        "&limit=3&api-version=1.0&query=" +
+        this.filters.location;
+
+      axios
+        .get(url)
+        .then((response) => {
+          var results = response.data.results;
+
+          for (var i = 0; i < results.length; i++) {
+            this.suggested.push(results[i].address.freeformAddress);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    async getLongLat(newLocation) {
+      this.oldLocation = newLocation;
+
+      var key = "jHXzLOl_rAm6GnrNK-bnneuN_FO2IYRcTNv8cMEZBtw";
+      var url =
+        "https://atlas.microsoft.com/search/address/json?subscription-key=" +
+        key +
+        "&limit=3&api-version=1.0&query=" +
+        newLocation;
+
+      await axios
+        .get(url)
+        .then((response) => {
+          var results = response.data.results;
+
+          if (results.length > 0) {
+            this.filters.locationLat = results[0].position.lat;
+            this.filters.locationLong = results[0].position.lon;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     clear() {
-      this.filters.location = "";
+      this.filters.location = {};
       this.filters.radius = "0";
       this.filters.minPrice = "0";
       this.filters.maxPrice = "0";

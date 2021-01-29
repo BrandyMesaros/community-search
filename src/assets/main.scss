@@ -220,7 +220,7 @@ a:hover{
 }
 
 .b-sidebar {
-  width: 80%;
+  width: 50%;
   // overflow: hidden;
   // position: absolute;
   // bottom: 0;
@@ -231,12 +231,35 @@ a:hover{
 .my-sidebar.b-sidebar-outer {
   position: absolute !important;
   height: 100% !important;
-  padding-right: 1%;
+  // left: 50%;
+  z-index: 5;
+
 }
 
 .my-sidebar .b-sidebar {
   position: absolute !important;
   height: 100% !important;
-  width: 100%;
+  z-index: 5;
 }
+
+
+.vue-affix {
+  position: relative;
+}
+.affix {
+  position: fixed;
+}
+.affix-bottom {
+  position: relative;
+}
+
+.notALink{
+  cursor:pointer;
+
+  &:hover
+  {
+    color: $KhovOrange;
+  }
+}
+
 
