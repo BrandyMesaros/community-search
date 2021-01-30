@@ -6,14 +6,11 @@
     <b-col id="listOfResults" class="col-sm-12">
       <b-tabs v-model="tabIndex" content-class="mt-3" justified>
         <!--Community Results-->
-        <b-tab title="Community Results" lazy>
+        <b-tab title="Community" lazy>
           <b-row>
             <div class="col-md-7">
               <h4>Community Results</h4>
             </div>
-            
-
-          
 
             <div v-if="communitiesTotalCount > 50" class="col-md-5">
               <!--Paging-->
@@ -66,13 +63,13 @@
         </b-tab>
 
         <!--Home Design Result List-->
-        <b-tab title="Home Design Results" lazy>
+        <b-tab title="Home Design" lazy>
           <b-row>
-            <div class="col-md-7">
+            <div class="col-sm-7">
               <h4>Home Design Results</h4>
             </div>
 
-            <div v-if="hdTotalCount > 50" class="col-md-5">
+            <div v-if="hdTotalCount > 50" class="col-lg-5">
               <!--Paging-->
               <b-pagination
                 v-model="hdCurrentPage"
@@ -119,13 +116,13 @@
         </b-tab>
 
         <!--QMI Result List-->
-        <b-tab title="QMI Results" lazy>
+        <b-tab title="QMI" lazy>
           <b-row>
-            <div class="col-md-7">
+            <div class="col-sm-7">
               <h4>QMI Results</h4>
             </div>
 
-            <div v-if="qmiTotalCount > 50" class="col-md-5">
+            <div v-if="qmiTotalCount > 50" class="col-lg-5">
               <!--Paging-->
               <b-pagination
                 v-model="qmiCurrentPage"
@@ -183,26 +180,31 @@
       </b-col>
 
       <b-col class="col-sm-6">
-       <affix class="sidebar-menu" relative-element-selector="#searchResults" >
+       <affix class="sidebar-menu" relative-element-selector="#searchResults">
       <b-sidebar
         id="sidebar-right"
-        role="presentation"
         v-model="visible"
         v-if="infoData != null"
+        :title="infoData.CommunityName"
         right
         shadow
       >
-        <div class="px-3 py-2">
-          <h4>{{ infoData.CommunityName }}</h4>
+      <div class="px-3 py-2">
+        <b-col id="sideBarTabs">
+          <b-tabs 
+        pills card
+       active-nav-item-class="font-weight-bold text-uppercase tabClass"
+      >
+
+        <b-tab title="Community" lazy>
+           <!-- Community-->
+         <div class="community">
+             <h4> The Community  </h4>
           <div class="meta-data">
             <b class="text-muted"
               >{{ infoData.CommunityCity }}, {{ infoData.CommunityState }} |
               {{ infoData.CommunityBrandName }}
-              <span
-                v-if="
-                  infoData != undefined && infoData.CommunityType != undefined
-                "
-              >
+              <span v-if="infoData != undefined && infoData.CommunityType != undefined">
                 | {{ infoData.CommunityType }}
               </span>
             </b>
@@ -228,6 +230,243 @@
             <b-icon icon="house-fill"></b-icon> {{infoData.CommunitySalesOfficeAddress}} <br />
               <b-icon icon="telephone-fill"></b-icon> {{infoData.CommunitySalesOfficePhone}}
             </p>
+
+            <b>Website URL: </b> <a :href="infoData.CommunityURL" target="_blank"> Link </a>
+            </div>
+            <br><br>
+        </b-tab>
+
+
+<div v-if="infoData.HomeDesigns.length > 0">
+        <b-tab title="HDs"  lazy>
+          <!--Home Designs-->
+            <div class="Home Designs">
+              <h4> Home Designs </h4>
+
+              <div v-for="(hd, index) in infoData.HomeDesigns" :key="hd+index">
+                <br>
+                <h5>{{hd.HomeDesignName}}</h5>
+
+              <!--price-->
+              <b-row>
+                                  <b-col>
+                  <b-icon icon="tag-fill" variant="success"></b-icon>
+                  Starting at {{ hd.Price | toCurrency }}
+                </b-col>
+              </b-row>
+              <br>
+
+              <!--First Row-->
+              <b-row>
+                 <b-col>
+                  <b-icon
+                    icon="house-door-fill"
+                    style="color: #fb9536"
+                  ></b-icon>
+                  {{ hd.HomeDesignType }}
+                </b-col>
+
+                <b-col>
+                  <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
+                  {{ hd.Sqft }} sqft
+                </b-col>
+
+            
+             
+              </b-row>
+
+              <!--Second Row -->
+              <b-row>
+                            
+                <b-col>
+                  <b-icon icon="moon" style="color: #599097"></b-icon>
+                  {{ hd.Bedrooms }} Bedroom(s)
+                </b-col>
+
+                           <b-col>
+                  <b-icon icon="droplet-fill" variant="primary"></b-icon>
+                  {{ hd.Bathrooms }} Bathroom(s)
+                </b-col>
+
+                
+               
+            
+
+              </b-row>
+              
+              <!--Third row-->
+                <b-row>
+                    
+                <b-col>
+                  <b-icon icon="hammer" style="color: #545b62"></b-icon>
+                  {{ hd.Garages }} Garage(s)
+                </b-col>
+
+                <b-col>
+                  <b-icon
+                    icon="arrow-up-right-square-fill"
+                    style="color: #86bcc2"
+                  ></b-icon>
+                  {{ hd.Stories }} Floors(s)
+                </b-col>
+                
+                
+                             
+                </b-row>
+
+                <br/>
+
+                <!--Promotion Row -->
+                 <b-row>
+
+                <b-col v-if="hd.HasPromotions == true">
+                  <div v-for="(p, index) in hd.Promotions" :key="p + index">
+                     <b-icon
+                    icon="star-fill"
+                    variant="warning"
+                  ></b-icon><b> Promotion: {{p.PromoHeadline}}</b> <br/> 
+                  {{p.PromoDescription}} <br/>
+                  <a :href="p.PromoUrl" target="_blank">Website URL</a>
+                </div>
+                </b-col>   
+                  </b-row>
+                
+                <br/>
+       
+                <p><b> Description </b> <br />
+                 <span v-html="hd.Description"></span> </p>
+
+                 <div v-if="hd.WebsiteURL != undefined && hd.WebsiteURL.length > 0">
+                 <b>Links</b>
+
+                 <div v-for="(l, index) in hd.WebsiteURL" :key="l + index"> 
+                   <a :href="l.TheURL" target="_blank"> {{l.Type}} </a>
+
+                 </div>
+
+                 </div>
+
+
+                <hr />
+                </div>
+              </div>
+        </b-tab>
+
+
+ <b-tab title="QMIs" lazy>
+    <h4> Quick Move Ins </h4>
+<div v-for="(hd, index) in infoData.HomeDesigns" :key="hd+index">
+  <div v-if="hd.HasQMI == true">
+    
+       <div class="QMIs">
+     <br>
+
+     <div v-for="(qmi, i) in hd.QMIs" :key="qmi + i">
+      
+       <h5> {{hd.HomeDesignName}} - {{qmi.QmiAddress}} </h5>
+
+       <!--price-->
+              <b-row>
+                                  <b-col>
+                  <b-icon icon="tag-fill" variant="success"></b-icon>
+                  {{ qmi.QmiPrice | toCurrency }}
+                </b-col>
+              </b-row>
+              <br>
+
+              <!--First Row-->
+              <b-row>
+                 <b-col>
+                  <b-icon
+                    icon="house-door-fill"
+                    style="color: #fb9536"
+                  ></b-icon>
+                  {{ hd.HomeDesignType }}
+                </b-col>
+
+                <b-col>
+                  <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
+                  {{ qmi.QmiSqft }} sqft
+                </b-col>
+
+            
+             
+              </b-row>
+
+              <!--Second Row -->
+              <b-row>
+                            
+                <b-col>
+                  <b-icon icon="moon" style="color: #599097"></b-icon>
+                  {{ qmi.QmiBed }} Bedroom(s)
+                </b-col>
+
+                           <b-col>
+                  <b-icon icon="droplet-fill" variant="primary"></b-icon>
+                  {{ qmi.QmiBaths }} Bathroom(s)
+                </b-col>
+
+                
+               
+            
+
+              </b-row>
+              
+              <!--Third row-->
+                <b-row>
+                    
+                <b-col>
+                  <b-icon icon="hammer" style="color: #545b62"></b-icon>
+                  {{ qmi.QmiGarages }} Garage(s)
+                </b-col>
+
+                <b-col>
+                  <b-icon
+                    icon="arrow-up-right-square-fill"
+                    style="color: #86bcc2"
+                  ></b-icon>
+                  {{ qmi.QmiStories }} Floors(s)
+                </b-col>
+                
+                
+                             
+                </b-row>
+
+                <br/>
+
+                <!--Promotion Row -->
+                 <b-row>
+                    <br/>
+
+                <b-col v-if="hd.HasPromotions == true">
+                  <div v-for="(p, index) in hd.Promotions" :key="p + index">
+                     <b-icon
+                    icon="star-fill"
+                    variant="warning"
+                  ></b-icon><b> Promotion: {{p.PromoHeadline}}</b> <br/> 
+                  {{p.PromoDescription}} <br/>
+                  <a :href="p.PromoUrl" target="_blank">Website URL</a>
+                </div>
+                </b-col>   
+                  </b-row>
+                  <br />
+       
+       <p><b>Description</b> <br/>
+       <span v-html="qmi.QmiDescription"></span></p>
+
+<hr />
+       </div>
+    </div>
+
+          </div>
+          </div>
+            </b-tab>
+      
+        
+
+          </div>
+      </b-tabs>
+      </b-col>
 
         </div>
       </b-sidebar>
@@ -699,56 +938,53 @@ export default {
 
       var response = await this.SearchAPI(body);
 
-      if(response != undefined){
+      if (response != undefined) {
+        this.communitiesTotalCount = response["@odata.count"];
+        this.homes = [];
+        this.QMIs = [];
 
-          this.communitiesTotalCount = response["@odata.count"];
-          this.homes = [];
-          this.QMIs = [];
+        // console.log("LOOK" + JSON.stringify(response));
 
-          // console.log("LOOK" + JSON.stringify(response));
+        if (response.value != "") {
+          var val = response.value;
+          this.communities = val;
 
-          if (response.value != "") {
-            var val = response.value;
-            this.communities = val;
+          for (var h = 0; h < this.communities.length; h++) {
+            if (this.communities[h].HomeDesigns.length > 0) {
+              for (
+                var hd = 0;
+                hd < this.communities[h].HomeDesigns.length;
+                hd++
+              ) {
+                this.homes.push(this.communities[h].HomeDesigns[hd]);
 
-            for (var h = 0; h < this.communities.length; h++) {
-              if (this.communities[h].HomeDesigns.length > 0) {
-                for (
-                  var hd = 0;
-                  hd < this.communities[h].HomeDesigns.length;
-                  hd++
-                ) {
-                  this.homes.push(this.communities[h].HomeDesigns[hd]);
-
-                  if (this.communities[h].HomeDesigns[hd].HasQMI == true) {
-                    for (
-                      var q = 0;
-                      q < this.communities[h].HomeDesigns[hd].QMIs.length;
-                      q++
-                    ) {
-                      this.QMIs.push(
-                        this.communities[h].HomeDesigns[hd].QMIs[q]
-                      );
-                    }
+                if (this.communities[h].HomeDesigns[hd].HasQMI == true) {
+                  for (
+                    var q = 0;
+                    q < this.communities[h].HomeDesigns[hd].QMIs.length;
+                    q++
+                  ) {
+                    this.QMIs.push(this.communities[h].HomeDesigns[hd].QMIs[q]);
                   }
                 }
               }
             }
-
-            if (this.homes != undefined) {
-              this.hdTotalCount = this.homes.length;
-            }
-            if (this.QMIs != undefined) {
-              this.qmiTotalCount = this.QMIs.length;
-            }
-
-            // console.log(this.homes.length);
-            // console.log(this.QMIs.length);
-            // console.log(this.communities.length);
           }
+
+          if (this.homes != undefined) {
+            this.hdTotalCount = this.homes.length;
+          }
+          if (this.QMIs != undefined) {
+            this.qmiTotalCount = this.QMIs.length;
+          }
+
+          // console.log(this.homes.length);
+          // console.log(this.QMIs.length);
+          // console.log(this.communities.length);
+        }
       }
     },
-    async ConvertToMeters(miles){
+    async ConvertToMeters(miles) {
       var mi = 1609;
       var meters = miles * mi;
 

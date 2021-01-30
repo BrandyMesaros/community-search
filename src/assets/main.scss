@@ -3,6 +3,11 @@ $KhovDarkBlue: #599097;
 $KhovOrange: #FB9536;
 $DarkGrey: #545b62;
 
+html {
+    position: relative;
+    min-height: 125%;
+}
+
 body{
   font-family: Raleway,sans-serif;
 
@@ -164,7 +169,6 @@ input[type=checkbox]:checked::after{
  
 }
 
-
 .meta-data{
   margin-bottom: 1%;
 
@@ -198,7 +202,6 @@ input[type=checkbox]:checked::after{
     border-width: 2px;
 
   }
-  //width: 30%;
 }
 
 #save {
@@ -215,18 +218,13 @@ input[type=checkbox]:checked::after{
 
 }
 
-a:hover{
-  color: $KhovOrange;
-}
+a {
+  color:$KhovBlue;
 
-.b-sidebar {
-  width: 50%;
-  // overflow: hidden;
-  // position: absolute;
-  // bottom: 0;
-  // z-index: 5;
+  &:hover{
+    color: $KhovOrange;
+  }
 }
-
 
 .b-sidebar-outer {
   // position: absolute !important;
@@ -238,23 +236,10 @@ a:hover{
 }
 
  .b-sidebar {
-  // position: absolute !important;
-  // height: 100% !important;
   z-index: 5;
   position: relative !important;
   width: 100%;
 }
-
-
-// .vue-affix {
-//   position: relative;
-// }
-// .affix {
-//   position: fixed;
-// }
-// .affix-bottom {
-//   position: relative;
-// }
 
 .notALink{
   cursor:pointer;
@@ -265,4 +250,28 @@ a:hover{
   }
 }
 
+strong {
+  color: $KhovBlue;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 0;
+}
 
+.card-header {
+  background-color:rgba(0,0,0,0);
+}
+
+.nav-link.active {
+  color: white;
+  background-color: $KhovBlue;
+}
+
+.footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: $KhovBlue;
+   color: white;
+   text-align: center;
+}

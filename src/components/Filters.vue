@@ -375,7 +375,7 @@ export default {
         { text: "K Hovnanian Homes", value: "K Hovnanian Homes" },
       ],
       count: [
-        { text: "All", value: "All" },
+        { text: "Any", value: "Any" },
         { text: "1+", value: "1" },
         { text: "2+", value: "2" },
         { text: "3+", value: "3" },
@@ -387,10 +387,10 @@ export default {
         radius: "0",
         minPrice: "",
         maxPrice: "",
-        bedrooms: "All",
-        bathrooms: "All",
-        garages: "All",
-        stories: "All",
+        bedrooms: "Any",
+        bathrooms: "Any",
+        garages: "Any",
+        stories: "Any",
         minSqFootage: "",
         maxSqFootage: "",
         amenities: [],
@@ -735,10 +735,10 @@ export default {
       this.filters.minPrice = "0";
       this.filters.maxPrice = "0";
       this.filters.QMIstatus = "No_QMI";
-      this.filters.bedrooms = "All";
-      this.filters.bathrooms = "All";
-      this.filters.garages = "All";
-      this.filters.stories = "All";
+      this.filters.bedrooms = "Any";
+      this.filters.bathrooms = "Any";
+      this.filters.garages = "Any";
+      this.filters.stories = "Any";
       this.filters.minSqFootage = "";
       this.filters.maxSqFootage = "";
       this.filters.amenities = [];
