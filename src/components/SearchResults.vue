@@ -88,8 +88,9 @@
 
           <b-list-group v-if="homes != null" id="homesList">
             <div v-for="(com, i) in communities" :key="com.CommunityID + i">
+              <div  v-for="(home, h) in com.HomeDesigns" :key="home + h">
               <b-list-group-item
-                v-for="(home, h) in com.HomeDesigns"
+                v-if="homes.includes(home)"
               @click="openInfo(com, home, null)"
                 :key="home.HomeDesignNumber + h"
                 href="#"
@@ -112,6 +113,7 @@
                 <div v-html="home.Description"></div>
               </b-list-group-item>
             </div>
+              </div>
           </b-list-group>
         </b-tab>
 
@@ -148,8 +150,12 @@
                 v-for="(hd, i) in home.HomeDesigns"
                 :key="hd.HomeDesignNumber + 'QMI' + i"
               >
+              <div
+                v-for="(QMI, qmi) in hd.QMIs"
+                :key="QMI + qmi"
+              >
                 <b-list-group-item
-                  v-for="(QMI, qmi) in hd.QMIs"
+                  v-if="(QMIs.includes(QMI))"
                    @click="openInfo(home, hd, QMI)"
                   :key="QMI.QmiID + qmi"
                   href="#"
@@ -164,14 +170,15 @@
 
                   <div class="meta-data">
                     <b class="text-muted">{{ hd.HomeDesignType }}</b> |
-                    <b class="text-muted">{{ hd.Bedrooms }} Bedrooms</b> |
-                    <b class="text-muted">{{ hd.Bathrooms }} Bathrooms</b> |
-                    <b class="text-muted">{{ hd.Sqft }} Sqft</b> |
-                    <b class="text-muted">{{ hd.Price | toCurrency }}</b>
+                    <b class="text-muted">{{ QMI.QmiBed }} Bedrooms</b> |
+                    <b class="text-muted">{{ QMI.QmiBaths }} Bathrooms</b> |
+                    <b class="text-muted">{{ QMI.QmiSqft }} Sqft</b> |
+                    <b class="text-muted">{{ QMI.QmiPrice | toCurrency }}</b>
                   </div>
 
                   <div v-html="QMI.QmiDescription"></div>
                 </b-list-group-item>
+                </div>
               </div>
             </div>
           </b-list-group>
@@ -676,6 +683,7 @@ import axios from "axios";
 import VueRouter from "vue-router";
 import Affix from "vue-affix";
 import VueClipboard from "vue-clipboard2";
+import { filter } from "vue/types/umd";
 
 Vue.use(VueRouter);
 Vue.use(Affix);
@@ -757,8 +765,6 @@ export default {
         //   searchFields.push("CommunityID");
         // }
 
-        console.log(this.filterQuery);
-
         //Location
         if (this.filterQuery.radius != 0) {
           var long = this.filterQuery.locationLong;
@@ -783,7 +789,10 @@ export default {
               miles;
           }
         } else {
-          if (this.filterQuery.location != "") {
+          if (
+            this.filterQuery.location != null &&
+            this.filterQuery.location != ""
+          ) {
             if (
               this.filterQuery.locationCity == null ||
               this.filterQuery.locationCity == ""
@@ -813,6 +822,137 @@ export default {
                 ")"
             );
             console.log(search);
+          }
+        }
+
+        //Price Range
+        if (
+          this.filterQuery.minPrice != "" &&
+          this.filterQuery.maxPrice != ""
+        ) {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Price ge " +
+              this.filterQuery.minPrice +
+              " and h/Price le " +
+              this.filterQuery.maxPrice +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Price ge " +
+              this.filterQuery.minPrice +
+              " and h/Price le " +
+              this.filterQuery.maxPrice +
+              ")";
+          }
+        }
+        if (
+          this.filterQuery.minPrice == "" &&
+          this.filterQuery.maxPrice != ""
+        ) {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Price le " +
+              this.filterQuery.maxPrice +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Price le " +
+              this.filterQuery.maxPrice +
+              ")";
+          }
+        }
+        if (
+          this.filterQuery.minPrice != "" &&
+          this.filterQuery.maxPrice == ""
+        ) {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Price ge " +
+              this.filterQuery.minPrice +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Price ge " +
+              this.filterQuery.minPrice +
+              ")";
+          }
+        }
+
+        //Home Type
+        if (
+          this.filterQuery.homeType.length != null &&
+          this.filterQuery.homeType.length > 0
+        ) {
+          var ss = "";
+
+          for (var ii = 0; ii < this.filterQuery.homeType.length; ii++) {
+            ss += "'" + this.filterQuery.homeType[ii] + "'";
+            if (ii + 1 < this.filterQuery.homeType.length) {
+              ss += " OR ";
+            }
+          }
+
+          search.push("HomeDesigns/HomeDesignType:(" + ss + ")");
+        }
+
+        //Bedrooms
+        if (this.filterQuery.bedrooms != "Any") {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Bedrooms ge " +
+              this.filterQuery.bedrooms +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Bedrooms ge " +
+              this.filterQuery.bedrooms +
+              ")";
+          }
+        }
+
+        //Bathrooms
+        if (this.filterQuery.bathrooms != "Any") {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Bathrooms ge " +
+              this.filterQuery.bathrooms +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Bathrooms ge " +
+              this.filterQuery.bathrooms +
+              ")";
+          }
+        }
+
+        //Garages
+        if (this.filterQuery.garages != "Any") {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Garages ge " +
+              this.filterQuery.garages +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Garages ge " +
+              this.filterQuery.garages +
+              ")";
+          }
+        }
+
+        //Stories
+        if (this.filterQuery.stories != "Any") {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Stories ge " +
+              this.filterQuery.stories +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Stories ge " +
+              this.filterQuery.stories +
+              ")";
           }
         }
 
@@ -991,6 +1131,26 @@ export default {
             }
           }
 
+          if (this.filterQuery != null) {
+            var isEmpty = !Object.values(this.filterQuery).some(
+              (x) =>
+                x !== null &&
+                x !== "" &&
+                x !== "No_QMI" &&
+                x !== "Any" &&
+                x !== Array(0) &&
+                x !== undefined
+            );
+            console.log(isEmpty);
+          }
+
+          if (isEmpty == false) {
+            // this.homes = this.homes.filter(this.filterMore);
+            // this.QMIs = this.QMIs.filter(this.filterMore);
+
+            this.filterMore(this.homes);
+          }
+
           if (this.homes != undefined) {
             this.hdTotalCount = this.homes.length;
           }
@@ -1054,6 +1214,26 @@ export default {
         solid: true,
         variant: variant,
       });
+    },
+    filterMore(homes) {
+      // if (this.filterQuery.minPrice != null) {
+      //   homes.Price > this.filterQuery.minPrice ||
+      //     homes.QmiPrice > this.filterQuery.minPrice;
+      // }
+
+      // if (this.filterQuery.maxPrice != null) {
+      //   homes.Price < this.filterQuery.maxPrice ||
+      //     homes.QmiPrice < this.filterQuery.maxPrice;
+      // }
+
+      if (this.filterQuery.minPrice != null) {
+        homes = homes.filter(function (home) {
+          return (
+            home.Price > this.filterQuery.minPrice ||
+            home.QmiPrice > this.filterQuery.minPrice
+          );
+        });
+      }
     },
   },
 };

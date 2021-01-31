@@ -449,7 +449,9 @@ export default {
   watch: {
     filters: {
       async handler(val) {
+        console.log(this.filters.location);
         if (
+          this.filters.location != null &&
           this.filters.location != "" &&
           this.filters.location != this.oldLocation
         ) {
