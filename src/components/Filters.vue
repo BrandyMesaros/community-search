@@ -26,50 +26,56 @@
           <!--FIRST COLUMN-->
           <b-col class="col-sm-4">
             <!--Location-->
-       
-       <b-form-group label="Location">
-            <b-input-group class="mb-3">
-              <b-form-input
-                list="locationList"
-                v-model="filters.location"
-                size="sm"
-              ></b-form-input>
 
-              <b-input-group-append>
-                <b-button
+            <b-form-group label="Location">
+              <b-input-group class="mb-3">
+                <b-form-input
+                  list="locationList"
+                  v-model="filters.location"
                   size="sm"
-                  text="Search"
-                  v-on:click="GetCoordinates()"
-                  @click="$bvToast.show('DidYouMean')"
-                  >Search</b-button
-                >
-              </b-input-group-append>
-            </b-input-group>
+                ></b-form-input>
 
-            <datalist id="locationList">
-              <option v-for="(data, index) in datalist" :key="data + index">
-                {{ data }}
-              </option>
-            </datalist>
+                <b-input-group-append>
+                  <b-button
+                    size="sm"
+                    text="Search"
+                    v-on:click="GetCoordinates()"
+                    @click="$bvToast.show('DidYouMean')"
+                    >Search</b-button
+                  >
+                </b-input-group-append>
+              </b-input-group>
 
-            <b-toast id="DidYouMean" title="Suggestions:" static no-auto-hide v-model="toast">
-              <div v-if="suggested.length > 0">
-                <small
-                  v-for="(s, i) in suggested"
-                  :key="s + i"
-                  class="notALink"
-                  @click="
-                    $bvToast.hide('DidYouMean');
-                    populateLocation(s);
-                  "
-                  ><i> {{ s }} <br /></i
-                ></small>
-              </div>
-              <div v-else>
-                <small> <i> No suggestions </i></small>
-              </div>
-            </b-toast>
-       </b-form-group>
+              <datalist id="locationList">
+                <option v-for="(data, index) in datalist" :key="data + index">
+                  {{ data }}
+                </option>
+              </datalist>
+
+              <b-toast
+                id="DidYouMean"
+                title="Suggestions:"
+                static
+                no-auto-hide
+                v-model="toast"
+              >
+                <div v-if="suggested.length > 0">
+                  <small
+                    v-for="(s, i) in suggested"
+                    :key="s + i"
+                    class="notALink"
+                    @click="
+                      $bvToast.hide('DidYouMean');
+                      populateLocation(s);
+                    "
+                    ><i> {{ s }} <br /></i
+                  ></small>
+                </div>
+                <div v-else>
+                  <small> <i> No suggestions </i></small>
+                </div>
+              </b-toast>
+            </b-form-group>
 
             <b-form-group label="Radius (miles)">
               <b-row>
@@ -303,6 +309,15 @@
 
         <hr />
 
+        <b-alert
+          v-model="alertCountDown"
+          dismissible
+          variant="success"
+          @dismissed="alertCountDown = 0"
+          @dismiss-count-down="countDownChanged"
+        >
+          Save Successful!
+        </b-alert>
         <b-row>
           <b-col class="col-md-6">
             <b-button id="save" size="lg" v-on:click="SaveFilters">
@@ -354,6 +369,7 @@ export default {
   data() {
     return {
       name: "",
+      alertCountDown: 0,
       allData: [],
       allAmenities: [],
       allCommunitites: [{ value: "", text: "All Communities" }],
@@ -384,6 +400,9 @@ export default {
         location: null,
         locationLong: "",
         locationLat: "",
+        locationCity: "",
+        locationState: "",
+        locationZip: "",
         radius: "0",
         minPrice: "",
         maxPrice: "",
@@ -435,8 +454,7 @@ export default {
           this.filters.location != this.oldLocation
         ) {
           await this.getLongLat(this.filters.location);
-        }
-        else if (this.filters.location == "" ) {
+        } else if (this.filters.location == "") {
           this.toast = false;
         }
 
@@ -469,11 +487,11 @@ export default {
       return val;
     },
     async TableAPI(method, header, body) {
-      var val;
+      var val = 0;
 
       switch (method) {
         case "merge":
-          axios({
+          await axios({
             method: "merge",
             url:
               "https://sftpstgmmevl55akvtbc.table.core.windows.net/TEST" +
@@ -517,8 +535,8 @@ export default {
 
           return val;
 
-        default:
-        // code block
+        // default:
+        // // code block
       }
 
       return val;
@@ -552,10 +570,16 @@ export default {
         this.filters.stories = saved.Stories;
         this.filters.minSqFootage = saved.MinSqFootage;
         this.filters.maxSqFootage = saved.MaxSqFootage;
-        this.filters.amenities = saved.Amenities.split(",");
-        this.filters.brand = saved.Brand.split(",");
+        if (saved.Amenities != "") {
+          this.filters.amenities = saved.Amenities.split(",");
+        }
+        if (saved.Brand != "") {
+          this.filters.brand = saved.Brand.split(",");
+        }
         this.filters.moveInDate = saved.MoveInDate;
-        this.filters.homeType = saved.HomeType.split(",");
+        if (saved.HomeType != "") {
+          this.filters.homeType = saved.HomeType.split(",");
+        }
         this.rowKey = saved.RowKey;
         this.lastUpdated = saved.updatedDateTime;
         this.created = saved.createdDateTime;
@@ -577,7 +601,6 @@ export default {
 
       if (info != null || info != undefined) {
         var val = info["@search.facets"];
-        // console.log(val);
 
         //Ammenities
         var amm = val["HomeDesigns/Amenities"];
@@ -649,6 +672,11 @@ export default {
       };
 
       var info = await this.TableAPI(method, header, body);
+      if (info == 204) {
+        this.alertCountDown = 2;
+      }
+
+      console.log(info);
     },
     CreateUUID() {
       var uuidValue = "",
@@ -713,27 +741,70 @@ export default {
         "https://atlas.microsoft.com/search/address/json?subscription-key=" +
         key +
         "&limit=3&api-version=1.0&query=" +
-        newLocation;
+        newLocation +
+        ", USA";
 
       await axios
         .get(url)
         .then((response) => {
+          this.filters.locationLat = "";
+          this.filters.locationLong = "";
+          this.filters.locationState = "";
+          this.filters.locationZip = "";
+          this.filters.locationCity = "";
+
           var results = response.data.results;
 
           if (results.length > 0) {
+            console.log(results[0]);
+
             this.filters.locationLat = results[0].position.lat;
             this.filters.locationLong = results[0].position.lon;
+            this.filters.locationState = results[0].address.countrySubdivision;
+
+            if (results[0].address.postalCode != null) {
+              this.filters.locationZip = results[0].address.postalCode;
+            }
+
+            if (results[0].type == "Street") {
+              this.filters.locationCity = results[0].address.localName;
+            } else {
+              if (results[0].address.municipality != null) {
+                if (results[0].address.municipality.length > 0) {
+                  var split = results[0].address.municipality.split(",");
+                  console.log(split);
+                  this.filters.locationCity = split[0];
+                }
+              } else {
+                this.filters.locationCity = null;
+              }
+            }
+
+            if (results[0].entityType == "PostalCodeArea") {
+              console.log(results[0].entityType);
+              this.filters.locationCity = null;
+            }
           }
+
+          console.log(results);
         })
         .catch((error) => {
           console.log(error);
         });
     },
+    countDownChanged(dismissCountDown) {
+      this.alertCountDown = dismissCountDown;
+    },
     clear() {
-      this.filters.location = {};
+      this.filters.location = "";
+      this.filters.locationLong = "";
+      this.filters.locationLat = "";
+      this.filters.locationCity = "";
+      this.filters.locationState = "";
+      this.filters.locationZip = "";
       this.filters.radius = "0";
-      this.filters.minPrice = "0";
-      this.filters.maxPrice = "0";
+      this.filters.minPrice = "";
+      this.filters.maxPrice = "";
       this.filters.QMIstatus = "No_QMI";
       this.filters.bedrooms = "Any";
       this.filters.bathrooms = "Any";
