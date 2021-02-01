@@ -347,9 +347,11 @@ import Vue from "vue";
 import axios from "axios";
 import VueRouter from "vue-router";
 import VueCurrencyInput from "vue-currency-input";
+import MD5 from "md5";
 
 Vue.use(VueRouter);
 Vue.use(VueCurrencyInput);
+Vue.use(MD5);
 
 var router = new VueRouter({
   mode: "history",
@@ -549,9 +551,11 @@ export default {
       return val;
     },
     async GetFilters() {
+      var md5 = require("md5");
+
       var method = "getFilters";
       var ID = this.filters.id;
-      var EMAIL = this.filters.email;
+      var EMAIL = md5(this.filters.email);
 
       var header =
         "&$filter=(ID eq '" +
@@ -648,6 +652,7 @@ export default {
     },
     async SaveFilters() {
       var created;
+      var md5 = require("md5");
 
       if (this.rowKey == undefined || this.rowKey == "") {
         this.rowKey = this.CreateUUID();
@@ -680,7 +685,7 @@ export default {
         MoveInDate: this.filters.moveInDate,
         HomeType: this.filters.homeType.join(),
         ID: this.filters.id,
-        Email: this.filters.email,
+        Email: md5(this.filters.email),
         communityID: this.filters.communityID,
         createdDateTime: created,
         updatedDateTime: Date(Date.now()),
