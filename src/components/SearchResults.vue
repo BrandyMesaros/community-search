@@ -231,10 +231,7 @@
                 <b-col>
                   <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
                   {{ homeData.Sqft }} sqft
-                </b-col>
-
-            
-             
+                </b-col>  
               </b-row>
 
               <!--Second Row -->
@@ -249,11 +246,6 @@
                   <b-icon icon="droplet-fill" variant="primary"></b-icon>
                   {{ homeData.Bathrooms }} Bathroom(s)
                 </b-col>
-
-                
-               
-            
-
               </b-row>
               
               <!--Third row-->
@@ -271,10 +263,7 @@
                   ></b-icon>
                   {{ homeData.Stories }} Floors(s)
                 </b-col>
-                
-                
-                             
-                </b-row>
+                           </b-row>
 
                 <br/>
 
@@ -290,8 +279,8 @@
                   {{p.PromoDescription}} <br/>
                   <a :href="p.PromoUrl" target="_blank">Website URL</a> <b-icon class="notALink" icon="clipboard" @click="copy(p.PromoUrl)"></b-icon>
                 </div>
+                                <br/>
                 </b-col>   
-                <br/>
                   </b-row>
                 
                 <p><b> Description </b> <br />
@@ -624,17 +613,14 @@
                     style="color: #86bcc2"
                   ></b-icon>
                   {{ qmi.QmiStories }} Floors(s)
-                </b-col>
-                
-                
-                             
-                </b-row>
+                </b-col>                          
+                </b-row>          
 
-              
+                <br/>    
 
                 <!--Promotion Row -->
                  <b-row>
-                    <br/>
+                    <br/> 
 
                 <b-col v-if="hd.HasPromotions == true">
                   <div v-for="(p, index) in hd.Promotions" :key="p + index">
@@ -1020,7 +1006,6 @@ export default {
         //Move in date
         if (this.filterQuery.moveInDate != "") {
           var d = new Date(this.filterQuery.moveInDate);
-          console.log(d);
           if (filter != "") {
             filter +=
               " and HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
@@ -1052,14 +1037,13 @@ export default {
         }
 
         //Ammenities
-        console.log(this.filterQuery.amenities);
         if (
           this.filterQuery.amenities.length != null &&
           this.filterQuery.amenities.length > 0
         ) {
           var am = "";
 
-          for (var a = 0; b < this.filterQuery.amenities.length; a++) {
+          for (var a = 0; a < this.filterQuery.amenities.length; a++) {
             am += "'" + this.filterQuery.amenities[a] + "'";
             if (a + 1 < this.filterQuery.amenities.length) {
               am += " AND ";
@@ -1097,9 +1081,9 @@ export default {
         this.currentFilter = filter;
 
         // console.log(search);
-        console.log("search: " + this.currentSearch);
-        console.log("fields: " + this.currentSearchFields);
-        console.log("filter: " + this.currentFilter);
+        // console.log("search: " + this.currentSearch);
+        // console.log("fields: " + this.currentSearchFields);
+        // console.log("filter: " + this.currentFilter);
 
         this.communitiesCurrentPage = 1;
         this.hdCurrentPage = 1;
@@ -1215,8 +1199,6 @@ export default {
         this.communitiesTotalCount = response["@odata.count"];
         this.homes = [];
         this.QMIs = [];
-
-        // console.log("LOOK" + JSON.stringify(response));
 
         if (response.value != "") {
           var val = response.value;

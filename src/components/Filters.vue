@@ -99,15 +99,19 @@
             <!--Price-->
             <b-form-group label="Price Range">
               <b-form-input
-                type="number"
                 v-model="filters.minPrice"
                 placeholder="Min Price"
+                v-currency="{
+                  currency: 'USD',
+                  locale: 'en',
+                  precision: 0,
+                }"
                 size="sm"
               ></b-form-input>
               <b-form-input
-                type="number"
                 v-model="filters.maxPrice"
                 placeholder="Max Price"
+                v-currency="{ currency: 'USD', locale: 'en', precision: 0 }"
                 size="sm"
               ></b-form-input>
             </b-form-group>
@@ -342,8 +346,10 @@
 import Vue from "vue";
 import axios from "axios";
 import VueRouter from "vue-router";
+import VueCurrencyInput from "vue-currency-input";
 
 Vue.use(VueRouter);
+Vue.use(VueCurrencyInput);
 
 var router = new VueRouter({
   mode: "history",
