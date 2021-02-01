@@ -693,9 +693,8 @@ export default {
       communities: [],
       homes: [],
       QMIs: [],
-      eCommunities: [],
-      eHomes: [],
-      eQMIs: [],
+      otherHomes: [],
+      otherQMIs: [],
       searchFilter: "",
       modalData: null,
       perPage: 50,
@@ -720,21 +719,18 @@ export default {
     };
   },
   mounted: function () {
-    var path = this.$route.path;
-
-    if (path != "") {
-      var search = path.replace("/", "");
-      var searchFields = "CommunityID";
-
-      this.currentSearch = search;
-      this.currentSearchFields = searchFields;
-
-      this.GetHomes(this.currentSearch, this.currentSearchFields, "", "", 0);
-    }
+    // var path = this.$route.path;
+    // if (path != "" && path != "/") {
+    //   var search = path.replace("/", "");
+    //   this.currentSearch = 'CommunityID:("' + search + '")';
+    //   this.GetHomes(this.currentSearch, "", "", "", 0);
+    // }
   },
   watch: {
     filterQuery: {
       async handler(val) {
+        console.log(this.filterQuery);
+
         this.communities = [];
         this.homes = [];
         this.QMIs = [];
@@ -746,8 +742,7 @@ export default {
 
         //search
         // if (this.filterQuery.communityID != "") {
-        //   search.push(this.filterQuery.communityID);
-        //   searchFields.push("CommunityID");
+        //   search.push('CommunityID:("' + this.filterQuery.communityID + '")');
         // }
 
         //Location
@@ -1089,6 +1084,16 @@ export default {
         this.hdCurrentPage = 1;
         this.qmiCurrentPage = 1;
 
+        var path = this.$route.path;
+
+        if (path != "" && path != "/") {
+          this.currentSearch = "";
+          this.currentSearchFields = "";
+          filter = "";
+          var comID = path.replace("/", "");
+          this.currentSearch = 'CommunityID:("' + comID + '")';
+        }
+
         this.GetHomes(
           this.currentSearch,
           this.currentSearchFields,
@@ -1193,6 +1198,8 @@ export default {
         skip: skipNum,
       };
 
+      console.log(body);
+
       var response = await this.SearchAPI(body);
 
       if (response != undefined) {
@@ -1267,6 +1274,7 @@ export default {
       return meters;
     },
     openInfo(comData, homeData, qmiData) {
+      this.sidebarTabIndex = 0;
       this.infoData = null;
       this.homeData = null;
       this.qmiData = null;

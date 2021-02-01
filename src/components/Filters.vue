@@ -563,10 +563,15 @@ export default {
 
       var info = await this.TableAPI(method, header, body);
 
-      if (info != undefined && info.value.length > 0) {
+      if (info != null && info.value != null && info.value.length > 0) {
         var saved = info.value[0];
 
         this.filters.location = saved.Location;
+        this.filters.locationLong = saved.LocationLong;
+        this.filters.locationLat = saved.LocationLat;
+        this.filters.locationCity = saved.LocationCity;
+        this.filters.locationState = saved.LocationState;
+        this.filters.locationZip = saved.LocationZip;
         this.filters.radius = saved.Radius;
         this.filters.minPrice = saved.MinPrice;
         this.filters.maxPrice = saved.MaxPrice;
@@ -655,6 +660,11 @@ export default {
       var header = "(PartitionKey='Search', RowKey='" + RK + "')";
       var body = {
         Location: this.filters.location,
+        LocationLong: this.filters.locationLong,
+        LocationLat: this.filters.locationLat,
+        LocationCity: this.filters.locationCity,
+        LocationState: this.filters.locationState,
+        LocationZip: this.filters.locationZip,
         Radius: this.filters.radius,
         MinPrice: this.filters.minPrice,
         MaxPrice: this.filters.maxPrice,
