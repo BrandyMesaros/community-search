@@ -683,7 +683,6 @@ import axios from "axios";
 import VueRouter from "vue-router";
 import Affix from "vue-affix";
 import VueClipboard from "vue-clipboard2";
-import { filter } from "vue/types/umd";
 
 Vue.use(VueRouter);
 Vue.use(Affix);
@@ -821,7 +820,6 @@ export default {
                 this.filterQuery.locationZip +
                 ")"
             );
-            console.log(search);
           }
         }
 
@@ -954,6 +952,121 @@ export default {
               this.filterQuery.stories +
               ")";
           }
+        }
+
+        //Has QMIs
+        if (this.filterQuery.QMIStatus == "yes_QMI") {
+          if (filter != "") {
+            filter += " and HomeDesigns/any (h: h/HasQMI eq true)";
+          } else {
+            filter += "HomeDesigns/any (h: h/HasQMI eq true)";
+          }
+        }
+
+        //SQFT
+        if (
+          this.filterQuery.minSqFootage != "" &&
+          this.filterQuery.maxSqFootage != ""
+        ) {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Sqft ge " +
+              this.filterQuery.minSqFootage +
+              " and h/Sqft le " +
+              this.filterQuery.maxSqFootage +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Sqft ge " +
+              this.filterQuery.minSqFootage +
+              " and h/Sqft le " +
+              this.filterQuery.maxSqFootage +
+              ")";
+          }
+        }
+        if (
+          this.filterQuery.minSqFootage == "" &&
+          this.filterQuery.maxSqFootage != ""
+        ) {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Sqft le " +
+              this.filterQuery.maxSqFootage +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Sqft le " +
+              this.filterQuery.maxSqFootage +
+              ")";
+          }
+        }
+        if (
+          this.filterQuery.minSqFootage != "" &&
+          this.filterQuery.maxSqFootage == ""
+        ) {
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/Sqft ge " +
+              this.filterQuery.minSqFootage +
+              ")";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/Sqft ge " +
+              this.filterQuery.minSqFootage +
+              ")";
+          }
+        }
+
+        //Move in date
+        if (this.filterQuery.moveInDate != "") {
+          var d = new Date(this.filterQuery.moveInDate);
+          console.log(d);
+          if (filter != "") {
+            filter +=
+              " and HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
+              d.toISOString() +
+              "))";
+          } else {
+            filter +=
+              "HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
+              d.toISOString() +
+              "))";
+          }
+        }
+
+        //Brand Name
+        if (
+          this.filterQuery.brand.length != null &&
+          this.filterQuery.brand.length > 0
+        ) {
+          var br = "";
+
+          for (var b = 0; b < this.filterQuery.brand.length; b++) {
+            br += "'" + this.filterQuery.brand[b] + "'";
+            if (b + 1 < this.filterQuery.brand.length) {
+              br += " OR ";
+            }
+          }
+
+          search.push('CommunityBrandName:("' + br + '")');
+        }
+
+        //Ammenities
+        console.log(this.filterQuery.amenities);
+        if (
+          this.filterQuery.amenities.length != null &&
+          this.filterQuery.amenities.length > 0
+        ) {
+          var am = "";
+
+          for (var a = 0; b < this.filterQuery.amenities.length; a++) {
+            am += "'" + this.filterQuery.amenities[a] + "'";
+            if (a + 1 < this.filterQuery.amenities.length) {
+              am += " AND ";
+            }
+          }
+
+          search.push('HomeDesigns/Amenities:("' + am + '")');
         }
 
         var searchString = "";
@@ -1141,14 +1254,11 @@ export default {
                 x !== Array(0) &&
                 x !== undefined
             );
-            console.log(isEmpty);
           }
 
           if (isEmpty == false) {
-            // this.homes = this.homes.filter(this.filterMore);
-            // this.QMIs = this.QMIs.filter(this.filterMore);
-
-            this.filterMore(this.homes);
+            this.filterMore(this.homes, "homes");
+            this.filterMore(this.QMIs, "qmis");
           }
 
           if (this.homes != undefined) {
@@ -1215,24 +1325,152 @@ export default {
         variant: variant,
       });
     },
-    filterMore(homes) {
-      // if (this.filterQuery.minPrice != null) {
-      //   homes.Price > this.filterQuery.minPrice ||
-      //     homes.QmiPrice > this.filterQuery.minPrice;
-      // }
+    filterMore(homes, type) {
+      var newHomes = [];
+      var remove = [];
 
-      // if (this.filterQuery.maxPrice != null) {
-      //   homes.Price < this.filterQuery.maxPrice ||
-      //     homes.QmiPrice < this.filterQuery.maxPrice;
-      // }
+      for (var h = 0; h < homes.length; h++) {
+        //Price
+        if (
+          this.filterQuery.minPrice != "" &&
+          this.filterQuery.maxPrice != ""
+        ) {
+          if (
+            (homes[h].Price || homes[h].QmiPrice) < this.filterQuery.minPrice ||
+            (homes[h].Price || homes[h].QmiPrice) > this.filterQuery.maxPrice
+          ) {
+            remove.push(h);
+            continue;
+          }
+        } else if (
+          this.filterQuery.minPrice == "" &&
+          this.filterQuery.maxPrice != ""
+        ) {
+          if (
+            (homes[h].Price || homes[h].QmiPrice) > this.filterQuery.maxPrice
+          ) {
+            remove.push(h);
+            continue;
+          }
+        } else if (
+          this.filterQuery.minPrice != "" &&
+          this.filterQuery.maxPrice == ""
+        ) {
+          if (
+            (homes[h].Price || homes[h].QmiPrice) < this.filterQuery.minPrice
+          ) {
+            remove.push(h);
+            continue;
+          }
+        }
 
-      if (this.filterQuery.minPrice != null) {
-        homes = homes.filter(function (home) {
-          return (
-            home.Price > this.filterQuery.minPrice ||
-            home.QmiPrice > this.filterQuery.minPrice
-          );
-        });
+        //Home Designs
+        if (this.filterQuery.homeType.length > 0) {
+          if (
+            !this.filterQuery.homeType.includes(
+              homes[h].HomeDesignType || homes[h].QmiHomeType
+            )
+          ) {
+            remove.push(h);
+            continue;
+          }
+        }
+
+        //Bedrooms
+        if (this.filterQuery.bedrooms != "Any") {
+          if (
+            (homes[h].Bedrooms || homes[h].QmiBed) < this.filterQuery.bedrooms
+          ) {
+            remove.push(h);
+            continue;
+          }
+        }
+
+        //Bathrooms
+        if (this.filterQuery.bathrooms != "Any") {
+          if (
+            (homes[h].Bathrooms || homes[h].QmiBaths) <
+            this.filterQuery.bathrooms
+          ) {
+            remove.push(h);
+            continue;
+          }
+        }
+
+        //Garages
+        if (this.filterQuery.garages != "Any") {
+          if (
+            (homes[h].Garages || homes[h].QmiGarages) < this.filterQuery.garages
+          ) {
+            remove.push(h);
+            continue;
+          }
+        }
+
+        //Stories
+        if (this.filterQuery.stories != "Any") {
+          if (
+            (homes[h].Stories || homes[h].QmiStories) < this.filterQuery.stories
+          ) {
+            remove.push(h);
+            continue;
+          }
+        }
+
+        //Has QMIs
+        if (this.filterQuery.QMIStatus == "yes_QMI") {
+          if (homes[h].HasQMI == false) {
+            remove.push(h);
+            continue;
+          }
+        }
+
+        //SQFT
+        if (
+          this.filterQuery.minSqFootage != "" &&
+          this.filterQuery.maxSqFootage != ""
+        ) {
+          if (
+            (homes[h].Sqft || homes[h].QmiSqft) <
+              this.filterQuery.minSqFootage ||
+            (homes[h].Sqft || homes[h].QmiSqft) > this.filterQuery.maxSqFootage
+          ) {
+            remove.push(h);
+            continue;
+          }
+        } else if (
+          this.filterQuery.minSqFootage == "" &&
+          this.filterQuery.maxSqFootage != ""
+        ) {
+          if (
+            (homes[h].Sqft || homes[h].QmiSqft) > this.filterQuery.maxSqFootage
+          ) {
+            remove.push(h);
+            continue;
+          }
+        } else if (
+          this.filterQuery.minSqFootage != "" &&
+          this.filterQuery.maxSqFootage == ""
+        ) {
+          if (
+            (homes[h].Sqft || homes[h].QmiSqft) < this.filterQuery.minSqFootage
+          ) {
+            remove.push(h);
+            continue;
+          }
+        }
+      }
+
+      if (remove.length > 0) {
+        for (var r = remove.length - 1; r >= 0; r--) {
+          homes.splice(remove[r], 1);
+        }
+      }
+
+      if (type == "homes") {
+        this.homes = homes;
+      } else if (type == "qmis") {
+        this.QMIs = homes;
       }
     },
   },

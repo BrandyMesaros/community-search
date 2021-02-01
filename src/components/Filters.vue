@@ -413,7 +413,7 @@ export default {
         minSqFootage: "",
         maxSqFootage: "",
         amenities: [],
-        QMIStatus: "No_QMI",
+        QMIStatus: "no_QMI",
         brand: [],
         moveInDate: "",
         homeType: [],
@@ -449,7 +449,6 @@ export default {
   watch: {
     filters: {
       async handler(val) {
-        console.log(this.filters.location);
         if (
           this.filters.location != null &&
           this.filters.location != "" &&
@@ -677,8 +676,6 @@ export default {
       if (info == 204) {
         this.alertCountDown = 2;
       }
-
-      console.log(info);
     },
     CreateUUID() {
       var uuidValue = "",
@@ -758,8 +755,6 @@ export default {
           var results = response.data.results;
 
           if (results.length > 0) {
-            console.log(results[0]);
-
             this.filters.locationLat = results[0].position.lat;
             this.filters.locationLong = results[0].position.lon;
             this.filters.locationState = results[0].address.countrySubdivision;
@@ -774,7 +769,6 @@ export default {
               if (results[0].address.municipality != null) {
                 if (results[0].address.municipality.length > 0) {
                   var split = results[0].address.municipality.split(",");
-                  console.log(split);
                   this.filters.locationCity = split[0];
                 }
               } else {
@@ -783,12 +777,9 @@ export default {
             }
 
             if (results[0].entityType == "PostalCodeArea") {
-              console.log(results[0].entityType);
               this.filters.locationCity = null;
             }
           }
-
-          console.log(results);
         })
         .catch((error) => {
           console.log(error);
