@@ -31,6 +31,7 @@
               <b-input-group class="mb-3">
                 <b-form-input
                   list="locationList"
+                  type="search"
                   v-model="filters.location"
                   size="sm"
                 ></b-form-input>
@@ -77,7 +78,10 @@
               </b-toast>
             </b-form-group>
 
-            <b-form-group label="Radius (miles)">
+            <b-form-group
+              label="Radius (miles)"
+              :disabled="filters.location == ''"
+            >
               <b-row>
                 <b-col md="8">
                   <b-form-input
@@ -427,6 +431,7 @@ export default {
         homeType: [],
         id: this.$route.query.id,
         email: this.$route.query.email,
+        phone: this.$route.query.phone,
         communityID: "",
       },
       partitionKey: "",
@@ -439,7 +444,7 @@ export default {
   beforeMount() {
     this.GetAllFacets();
   },
-  mounted: function () {
+  mounted: async function () {
     var path = this.$route.path;
 
     if (path != "") {
@@ -447,12 +452,16 @@ export default {
       this.filters.communityID = this.communityID;
     }
 
-    if (this.$route.query.id != undefined) {
-      this.GetFilters();
+    if (
+      this.$route.query.id != undefined ||
+      this.$route.query.email != undefined ||
+      this.$route.query.phone != undefined
+    ) {
+      await this.GetFilters();
     }
-    if (this.$route.query.email != undefined) {
-      this.GetFilters();
-    }
+
+    this.$emit("filters", this.filters);
+    this.$emit("communityID", this.filters.communityID);
   },
   watch: {
     filters: {
@@ -465,10 +474,8 @@ export default {
           await this.getLongLat(this.filters.location);
         } else if (this.filters.location == "") {
           this.toast = false;
+          this.filters.radius = 0;
         }
-
-        this.$emit("filters", this.filters);
-        this.$emit("communityID", this.filters.communityID);
       },
       deep: true,
     },
@@ -555,14 +562,21 @@ export default {
 
       var method = "getFilters";
       var ID = this.filters.id;
-      var EMAIL = md5(this.filters.email);
+      if (this.filters.email != null) {
+        var EMAIL = md5(this.filters.email);
+        console.log(EMAIL);
+      }
+      var PHONE = this.filters.phone;
 
       var header =
         "&$filter=(ID eq '" +
         ID +
         "') or  (Email eq '" +
         EMAIL +
+        "') or (Phone eq '" +
+        PHONE +
         "')&$select=*";
+
       var body = "";
 
       var info = await this.TableAPI(method, header, body);
@@ -595,6 +609,12 @@ export default {
         this.filters.moveInDate = saved.MoveInDate;
         if (saved.HomeType != "") {
           this.filters.homeType = saved.HomeType.split(",");
+        }
+        if (saved.ID != null) {
+          this.filters.id = saved.ID;
+        }
+        if (saved.Phone != null) {
+          this.filters.phone = saved.Phone;
         }
         this.rowKey = saved.RowKey;
         this.lastUpdated = saved.updatedDateTime;
@@ -663,6 +683,12 @@ export default {
 
       var method = "merge";
       var header = "(PartitionKey='Search', RowKey='" + RK + "')";
+
+      var email = "";
+      if (this.filters.email != null) {
+        email = md5(this.filters.email);
+      }
+
       var body = {
         Location: this.filters.location,
         LocationLong: this.filters.locationLong,
@@ -685,7 +711,8 @@ export default {
         MoveInDate: this.filters.moveInDate,
         HomeType: this.filters.homeType.join(),
         ID: this.filters.id,
-        Email: md5(this.filters.email),
+        Email: email,
+        Phone: this.filters.phone,
         communityID: this.filters.communityID,
         createdDateTime: created,
         updatedDateTime: Date(Date.now()),

@@ -693,8 +693,9 @@ export default {
       communities: [],
       homes: [],
       QMIs: [],
-      otherHomes: [],
-      otherQMIs: [],
+      eCommunities: [],
+      eHomes: [],
+      eQMIs: [],
       searchFilter: "",
       modalData: null,
       perPage: 50,
@@ -718,19 +719,32 @@ export default {
       sidebarTabIndex: 0,
     };
   },
-  mounted: function () {
-    // var path = this.$route.path;
-    // if (path != "" && path != "/") {
-    //   var search = path.replace("/", "");
-    //   this.currentSearch = 'CommunityID:("' + search + '")';
-    //   this.GetHomes(this.currentSearch, "", "", "", 0);
-    // }
+  mounted: async function () {
+    var path = this.$route.path;
+
+    if (path != "" && path != "/") {
+      var search = path.replace("/", "");
+
+      var s = 'CommunityID:("' + search + '")';
+
+      var body = {
+        search: s,
+        searchMode: "any",
+        queryType: "full",
+        count: "true",
+        top: 5,
+      };
+
+      var com = await this.SearchAPI(body);
+      console.log(com);
+      if (com != null && (com.value != null) & (com.value.length > 0)) {
+        this.openInfo(com.value[0], null, null);
+      }
+    }
   },
   watch: {
     filterQuery: {
       async handler(val) {
-        console.log(this.filterQuery);
-
         this.communities = [];
         this.homes = [];
         this.QMIs = [];
@@ -739,11 +753,6 @@ export default {
         var search = [];
         var searchFields = [];
         var filter = "";
-
-        //search
-        // if (this.filterQuery.communityID != "") {
-        //   search.push('CommunityID:("' + this.filterQuery.communityID + '")');
-        // }
 
         //Location
         if (this.filterQuery.radius != 0) {
@@ -1084,16 +1093,6 @@ export default {
         this.hdCurrentPage = 1;
         this.qmiCurrentPage = 1;
 
-        var path = this.$route.path;
-
-        if (path != "" && path != "/") {
-          this.currentSearch = "";
-          this.currentSearchFields = "";
-          filter = "";
-          var comID = path.replace("/", "");
-          this.currentSearch = 'CommunityID:("' + comID + '")';
-        }
-
         this.GetHomes(
           this.currentSearch,
           this.currentSearchFields,
@@ -1198,8 +1197,6 @@ export default {
         skip: skipNum,
       };
 
-      console.log(body);
-
       var response = await this.SearchAPI(body);
 
       if (response != undefined) {
@@ -1274,7 +1271,6 @@ export default {
       return meters;
     },
     openInfo(comData, homeData, qmiData) {
-      this.sidebarTabIndex = 0;
       this.infoData = null;
       this.homeData = null;
       this.qmiData = null;
