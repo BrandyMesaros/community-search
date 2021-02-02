@@ -9,7 +9,7 @@ html {
 }
 
 body{
-  font-family: Raleway,sans-serif;
+  font-family: Raleway,sans-serif!important;
 
   h5, h4, h3, h2, h1 {
     color: $KhovBlue;
@@ -32,7 +32,6 @@ z-index: 1000;
   }
 
 }
-
 
 
 .btn {
@@ -262,9 +261,13 @@ strong {
 }
 
 .nav-link.active {
-  color: white;
-  background-color: $KhovBlue;
+  color: white !important;
+  background-color: $KhovBlue !important;
+  border-style: none;
+  font-weight: bolder;
 }
+
+
 
 .footer {
    position: fixed;
@@ -274,4 +277,21 @@ strong {
    background-color: $KhovBlue;
    color: white;
    text-align: center;
+}
+
+.activeStatus{
+  color: #9dc47d;
+
+}
+
+.comingSoon{
+color: #dc7cfc;
+}
+
+.closeout{
+color: #fc7272;
+}
+
+.grandOpening{
+color: $KhovOrange;
 }

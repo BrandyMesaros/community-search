@@ -80,7 +80,7 @@
 
             <b-form-group
               label="Radius (miles)"
-              :disabled="filters.location == ''"
+              :disabled="filters.location == '' || filters.location == null"
             >
               <b-row>
                 <b-col md="8">
@@ -564,7 +564,6 @@ export default {
       var ID = this.filters.id;
       if (this.filters.email != null) {
         var EMAIL = md5(this.filters.email);
-        console.log(EMAIL);
       }
       var PHONE = this.filters.phone;
 

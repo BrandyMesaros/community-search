@@ -42,10 +42,10 @@
                   {{ com.CommunityName }}
                 </h5>
 
-                <b v-if="com.CommunityStatus == 'ComingSoon'" style="color:#7359bd">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
-                <b v-if="com.CommunityStatus == 'Active'" style="color:#419450">{{ com.CommunityStatus }}</b>
-                <b v-if="com.CommunityStatus == 'Closeout'" style="color:#bd5959">{{ com.CommunityStatus }}</b>
-                <b v-if="com.CommunityStatus == 'GrandOpening'" style="color:#3381c4">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="com.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="com.CommunityStatus == 'Active'" class="activeStatus">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'Closeout'" class="closeout">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'GrandOpening'" class="grandOpening">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
                 
 
               </div>
@@ -105,12 +105,12 @@
                   <h5 class="mb-1">
                     {{ home.HomeDesignName }} - {{ com.CommunityName }}
                   </h5>
-
-                            <b v-if="com.CommunityStatus == 'ComingSoon'" style="color:#7359bd">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
-                <b v-if="com.CommunityStatus == 'Active'" style="color:#419450">{{ com.CommunityStatus }}</b>
-                <b v-if="com.CommunityStatus == 'Closeout'" style="color:#bd5959">{{ com.CommunityStatus }}</b>
-                <b v-if="com.CommunityStatus == 'GrandOpening'" style="color:#3381c4">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
-                </div>
+                <b v-if="com.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="com.CommunityStatus == 'Active'" class="activeStatus">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'Closeout'" class="closeout">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'GrandOpening'" class="grandOpening">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                
+     </div>
 
                 <div class="meta-data">
                   <b class="text-muted">{{ home.HomeDesignType }}</b> |
@@ -176,6 +176,13 @@
                       {{ hd.HomeDesignName }} - {{ QMI.QmiAddress }} -
                       {{ home.CommunityName }}
                     </h5>
+
+                    
+                <b v-if="home.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ home.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="home.CommunityStatus == 'Active'" class="activeStatus">{{ home.CommunityStatus }}</b>
+                <b v-if="home.CommunityStatus == 'Closeout'" class="closeout">{{ home.CommunityStatus }}</b>
+                <b v-if="home.CommunityStatus == 'GrandOpening'" class="grandOpening">{{ home.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                            
                     
                   </div>
 
@@ -210,6 +217,7 @@
         no-slide
       >
       <div class="px-3 py-2">
+
         <b-col id="sideBarTabs">
           <b-tabs 
         pills card
@@ -312,7 +320,9 @@
             </b-tab>
 
             <b-tab title="Quick Move In" v-if="qmiData != null">
-              <h5> {{homeData.HomeDesignName}} - {{qmiData.QmiAddress}} </h5>
+                     <h5> {{homeData.HomeDesignName}}</h5>
+       <p><b>  {{qmiData.QmiAddress}} </b> <b-icon class="notALink" icon="clipboard" @click="copy(qmiData.QmiAddress)"></b-icon> </p>
+
 
        <!--price-->
               <b-row>
@@ -416,7 +426,13 @@
           </div>
           <br />
 
-          <p><b>Status: {{ infoData.CommunityStatus }} </b></p>
+          <p><b>Status: </b>
+              <b v-if="infoData.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ infoData.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="infoData.CommunityStatus == 'Active'" class="activeStatus">{{ infoData.CommunityStatus }}</b>
+                <b v-if="infoData.CommunityStatus == 'Closeout'" class="closeout">{{ infoData.CommunityStatus }}</b>
+                <b v-if="infoData.CommunityStatus == 'GrandOpening'" class="grandOpening">{{ infoData.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+          
+            </p>
 
           <p>
             <b>Description</b> <br/>
@@ -566,7 +582,9 @@
 
      <div v-for="(qmi, i) in hd.QMIs" :key="qmi + i">
       
-       <h5> {{hd.HomeDesignName}} - {{qmi.QmiAddress}} </h5>
+       <h5> {{hd.HomeDesignName}}</h5>
+       <p><b>  {{qmi.QmiAddress}} </b> <b-icon class="notALink" icon="clipboard" @click="copy(qmi.QmiAddress)"></b-icon> </p>
+
 
        <!--price-->
               <b-row>
@@ -664,6 +682,7 @@
       </b-col>
 
         </div>
+        <br/> <br/>
       </b-sidebar>
       </affix>
       </b-col>
@@ -747,7 +766,6 @@ export default {
       };
 
       var com = await this.SearchAPI(body);
-      console.log(com);
       if (com != null && (com.value != null) & (com.value.length > 0)) {
         this.openInfo(com.value[0], null, null);
       }
@@ -1159,13 +1177,6 @@ export default {
         );
       },
     },
-    tabIndex: {
-      handlar(val) {
-        this.communitiesCurrentPage = 1;
-        this.hdCurrentPage = 1;
-        this.qmiCurrentPage = 1;
-      },
-    },
     visible: {
       handler(val) {
         var element = document.getElementById("listOfResults");
@@ -1203,8 +1214,6 @@ export default {
       return val;
     },
     async GetHomes(search, searchFields, filters, orderBy, skipNum) {
-      console.log(this.tabIndex);
-
       var body = {
         search: search,
         searchFields: searchFields,
@@ -1216,8 +1225,6 @@ export default {
         top: 500,
         skip: skipNum,
       };
-
-      console.log(body);
 
       var response = await this.SearchAPI(body);
 
@@ -1269,10 +1276,10 @@ export default {
             this.filterMore(this.QMIs, "qmis");
           }
 
-          if (this.homes != undefined) {
+          if (this.homes != undefined && skipNum == 0) {
             this.hdTotalCount = this.homes.length;
           }
-          if (this.QMIs != undefined) {
+          if (this.QMIs != undefined && skipNum == 0) {
             this.qmiTotalCount = this.QMIs.length;
           }
 

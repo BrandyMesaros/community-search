@@ -30,10 +30,11 @@
           </b-navbar-nav>
         </b-collapse> -->
 
-        <b-navbar-nav class="ml-auto" sticky=true>
+        <b-navbar-nav class="ml-auto" sticky="true">
           <b-nav-form>
             <b-form-input
               v-model="search"
+              type="search"
               @change="submit"
               size="sm"
               class="mr-sm-2"
