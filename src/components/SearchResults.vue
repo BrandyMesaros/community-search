@@ -42,7 +42,12 @@
                   {{ com.CommunityName }}
                 </h5>
 
-                {{ com.CommunityStatus }}
+                <b v-if="com.CommunityStatus == 'ComingSoon'" style="color:#7359bd">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="com.CommunityStatus == 'Active'" style="color:#419450">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'Closeout'" style="color:#bd5959">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'GrandOpening'" style="color:#3381c4">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                
+
               </div>
 
               <div class="meta-data">
@@ -100,6 +105,11 @@
                   <h5 class="mb-1">
                     {{ home.HomeDesignName }} - {{ com.CommunityName }}
                   </h5>
+
+                            <b v-if="com.CommunityStatus == 'ComingSoon'" style="color:#7359bd">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="com.CommunityStatus == 'Active'" style="color:#419450">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'Closeout'" style="color:#bd5959">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'GrandOpening'" style="color:#3381c4">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
                 </div>
 
                 <div class="meta-data">
@@ -166,6 +176,7 @@
                       {{ hd.HomeDesignName }} - {{ QMI.QmiAddress }} -
                       {{ home.CommunityName }}
                     </h5>
+                    
                   </div>
 
                   <div class="meta-data">
@@ -1124,9 +1135,9 @@ export default {
         );
       },
     },
-    HdCurrentPage: {
+    hdCurrentPage: {
       handler(val) {
-        var skip = 50 * (this.communitiesCurrentPage - 1);
+        var skip = 50 * (this.hdCurrentPage - 1);
         this.GetHomes(
           this.currentSearch,
           this.currentSearchFields,
@@ -1136,9 +1147,9 @@ export default {
         );
       },
     },
-    QmiCurrentPage: {
+    qmiCurrentPage: {
       handler(val) {
-        var skip = 50 * (this.communitiesCurrentPage - 1);
+        var skip = 50 * (this.qmiCurrentPage - 1);
         this.GetHomes(
           this.currentSearch,
           this.currentSearchFields,
@@ -1146,6 +1157,13 @@ export default {
           "",
           skip
         );
+      },
+    },
+    tabIndex: {
+      handlar(val) {
+        this.communitiesCurrentPage = 1;
+        this.hdCurrentPage = 1;
+        this.qmiCurrentPage = 1;
       },
     },
     visible: {
@@ -1185,6 +1203,8 @@ export default {
       return val;
     },
     async GetHomes(search, searchFields, filters, orderBy, skipNum) {
+      console.log(this.tabIndex);
+
       var body = {
         search: search,
         searchFields: searchFields,
@@ -1196,6 +1216,8 @@ export default {
         top: 500,
         skip: skipNum,
       };
+
+      console.log(body);
 
       var response = await this.SearchAPI(body);
 
