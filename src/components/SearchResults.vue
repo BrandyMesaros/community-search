@@ -96,14 +96,14 @@
               <div  v-for="(home, h) in com.HomeDesigns" :key="home + h">
               <b-list-group-item
                 v-if="homes.includes(home)"
-              @click="openInfo(com, home, null)"
+               @click="openInfo(com, home, null)"
                 :key="home.HomeDesignNumber + h"
                 href="#"
                 class="flex-column align-items-start"
               >
                 <div class="d-flex w-100 justify-content-between">
                   <h5 class="mb-1">
-                    {{ home.HomeDesignName }} - {{ com.CommunityName }}
+                    {{ home.HomeDesignName }} - {{ com.CommunityName }} <b-icon icon="check-circle-fill" style="color: #9dc47d;"></b-icon>
                   </h5>
                 <b v-if="com.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
                 <b v-if="com.CommunityStatus == 'Active'" class="activeStatus">{{ com.CommunityStatus }}</b>
@@ -121,7 +121,38 @@
                 </div>
 
                 <div v-html="home.Description"></div>
-              </b-list-group-item>
+              </b-list-group-item>   
+              </div>
+
+  <div  v-for="(home, h) in com.HomeDesigns" :key="home + '2' + h">
+              <b-list-group-item
+                v-if="otherHomes.includes(home)"
+               @click="openInfo(com, home, null)"
+                :key="home.HomeDesignNumber + '2' + h"
+                href="#"
+                class="flex-column align-items-start"
+              >
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">
+                    {{ home.HomeDesignName }} - {{ com.CommunityName }} 
+                  </h5>
+                <b v-if="com.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="com.CommunityStatus == 'Active'" class="activeStatus">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'Closeout'" class="closeout">{{ com.CommunityStatus }}</b>
+                <b v-if="com.CommunityStatus == 'GrandOpening'" class="grandOpening">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                
+     </div>
+
+                <div class="meta-data">
+                  <b class="text-muted">{{ home.HomeDesignType }}</b> |
+                  <b class="text-muted">{{ home.Bedrooms }} Bedrooms</b> |
+                  <b class="text-muted">{{ home.Bathrooms }} Bathrooms</b> |
+                  <b class="text-muted">{{ home.Sqft }} Sqft</b> |
+                  <b class="text-muted">{{ home.Price | toCurrency }}</b>
+                </div>
+
+                <div v-html="home.Description"></div>
+              </b-list-group-item>   
             </div>
               </div>
           </b-list-group>
@@ -174,6 +205,49 @@
                   <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">
                       {{ hd.HomeDesignName }} - {{ QMI.QmiAddress }} -
+                      {{ home.CommunityName }} <b-icon icon="check-circle-fill" style="color: #9dc47d;"></b-icon>
+                    </h5>
+
+                    
+                <b v-if="home.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ home.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                <b v-if="home.CommunityStatus == 'Active'" class="activeStatus">{{ home.CommunityStatus }}</b>
+                <b v-if="home.CommunityStatus == 'Closeout'" class="closeout">{{ home.CommunityStatus }}</b>
+                <b v-if="home.CommunityStatus == 'GrandOpening'" class="grandOpening">{{ home.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
+                            
+                    
+                  </div>
+
+                  <div class="meta-data">
+                    <b class="text-muted">{{ hd.HomeDesignType }}</b> |
+                    <b class="text-muted">{{ QMI.QmiBed }} Bedrooms</b> |
+                    <b class="text-muted">{{ QMI.QmiBaths }} Bathrooms</b> |
+                    <b class="text-muted">{{ QMI.QmiSqft }} Sqft</b> |
+                    <b class="text-muted">{{ QMI.QmiPrice | toCurrency }}</b>
+                  </div>
+
+                  <div v-html="QMI.QmiDescription"></div>
+                </b-list-group-item>
+                </div>
+                </div>
+
+<div
+                v-for="(hd, i) in home.HomeDesigns"
+                :key="hd.HomeDesignNumber + 'QMI2' + i"
+              >
+                <div
+                v-for="(QMI, qmi) in hd.QMIs"
+                :key="QMI + '2' + qmi"
+              >
+                <b-list-group-item
+                  v-if="(otherQMIs.includes(QMI))"
+                   @click="openInfo(home, hd, QMI)"
+                  :key="QMI.QmiID + '2' + qmi"
+                  href="#"
+                  class="flex-column align-items-start"
+                >
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">
+                      {{ hd.HomeDesignName }} - {{ QMI.QmiAddress }} -
                       {{ home.CommunityName }}
                     </h5>
 
@@ -197,7 +271,9 @@
                   <div v-html="QMI.QmiDescription"></div>
                 </b-list-group-item>
                 </div>
-              </div>
+                </div>
+
+            
             </div>
           </b-list-group>
         </b-tab>
@@ -321,7 +397,11 @@
 
             <b-tab title="Quick Move In" v-if="qmiData != null">
                      <h5> {{homeData.HomeDesignName}}</h5>
+
+                       <div class="meta-data">
+                <div class="text-muted">
        <p><b>  {{qmiData.QmiAddress}} </b> <b-icon class="notALink" icon="clipboard" @click="copy(qmiData.QmiAddress)"></b-icon> </p>
+       </div> </div>
 
 
        <!--price-->
@@ -434,6 +514,20 @@
           
             </p>
 
+            
+               <div v-if="infoData.HomeDesigns[0] != undefined && infoData.HomeDesigns[0].Promotions != undefined">
+                  <div v-for="(p, index) in infoData.HomeDesigns[0].Promotions" :key="p + 'com' + index">
+                     <b-icon
+                    icon="star-fill"
+                    variant="warning"
+                  ></b-icon><b> Promotion: {{p.PromoHeadline}}</b> <br/> 
+                  {{p.PromoDescription}} <br/>
+                  <a :href="p.PromoUrl" target="_blank">Website URL</a> <b-icon class="notALink" icon="clipboard" @click="copy(p.PromoUrl)"></b-icon>
+                </div>
+                <br/>  
+                  </div>
+              
+
           <p>
             <b>Description</b> <br/>
              {{infoData.CommunityDescription}}
@@ -448,7 +542,7 @@
 
              <p>
             <b>Sales Office</b> <br/>
-            <b-icon icon="house-fill"></b-icon> {{infoData.CommunitySalesOfficeAddress}} <br />
+            <b-icon icon="house-fill"></b-icon> {{infoData.CommunitySalesOfficeAddress}} <b-icon class="notALink" icon="clipboard" @click="copy(infoData.CommunitySalesOfficeAddress)"></b-icon> <br />
               <b-icon icon="telephone-fill"></b-icon> {{infoData.CommunitySalesOfficePhone}}
             </p>
 
@@ -457,7 +551,7 @@
             <br><br>
         </b-tab>
 
-          <div v-if="infoData.HomeDesigns.length > 0 && homeData == null">
+          <div v-if="infoData.HomeDesigns.length != 0 && homeData == null">
         <b-tab title="HDs"  lazy>
           <!--Home Designs-->
             <div class="Home Designs">
@@ -583,7 +677,11 @@
      <div v-for="(qmi, i) in hd.QMIs" :key="qmi + i">
       
        <h5> {{hd.HomeDesignName}}</h5>
+     
+                       <div class="meta-data">
+                <div class="text-muted">
        <p><b>  {{qmi.QmiAddress}} </b> <b-icon class="notALink" icon="clipboard" @click="copy(qmi.QmiAddress)"></b-icon> </p>
+       </div> </div>
 
 
        <!--price-->
@@ -723,9 +821,8 @@ export default {
       communities: [],
       homes: [],
       QMIs: [],
-      eCommunities: [],
-      eHomes: [],
-      eQMIs: [],
+      otherHomes: [],
+      otherQMIs: [],
       searchFilter: "",
       modalData: null,
       perPage: 50,
@@ -1271,16 +1368,16 @@ export default {
             );
           }
 
-          if (isEmpty == false) {
-            this.filterMore(this.homes, "homes");
-            this.filterMore(this.QMIs, "qmis");
-          }
-
           if (this.homes != undefined && skipNum == 0) {
             this.hdTotalCount = this.homes.length;
           }
           if (this.QMIs != undefined && skipNum == 0) {
             this.qmiTotalCount = this.QMIs.length;
+          }
+
+          if (isEmpty == false) {
+            this.filterMore(this.homes, "homes");
+            this.filterMore(this.QMIs, "qmis");
           }
 
           // console.log(this.homes.length);
@@ -1303,6 +1400,8 @@ export default {
       this.infoData = null;
       this.homeData = null;
       this.qmiData = null;
+
+      this.sidebarTabIndex = 0;
 
       this.hasQMIs = false;
 
@@ -1341,7 +1440,7 @@ export default {
       });
     },
     filterMore(homes, type) {
-      var newHomes = [];
+      var other = [];
       var remove = [];
 
       for (var h = 0; h < homes.length; h++) {
@@ -1355,6 +1454,7 @@ export default {
             (homes[h].Price || homes[h].QmiPrice) > this.filterQuery.maxPrice
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         } else if (
@@ -1365,6 +1465,7 @@ export default {
             (homes[h].Price || homes[h].QmiPrice) > this.filterQuery.maxPrice
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         } else if (
@@ -1375,6 +1476,7 @@ export default {
             (homes[h].Price || homes[h].QmiPrice) < this.filterQuery.minPrice
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1387,6 +1489,7 @@ export default {
             )
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1397,6 +1500,7 @@ export default {
             (homes[h].Bedrooms || homes[h].QmiBed) < this.filterQuery.bedrooms
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1408,6 +1512,7 @@ export default {
             this.filterQuery.bathrooms
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1418,6 +1523,7 @@ export default {
             (homes[h].Garages || homes[h].QmiGarages) < this.filterQuery.garages
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1428,6 +1534,7 @@ export default {
             (homes[h].Stories || homes[h].QmiStories) < this.filterQuery.stories
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1436,6 +1543,7 @@ export default {
         if (this.filterQuery.QMIStatus == "yes_QMI") {
           if (homes[h].HasQMI == false) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1451,6 +1559,7 @@ export default {
             (homes[h].Sqft || homes[h].QmiSqft) > this.filterQuery.maxSqFootage
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         } else if (
@@ -1461,6 +1570,7 @@ export default {
             (homes[h].Sqft || homes[h].QmiSqft) > this.filterQuery.maxSqFootage
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         } else if (
@@ -1471,6 +1581,7 @@ export default {
             (homes[h].Sqft || homes[h].QmiSqft) < this.filterQuery.minSqFootage
           ) {
             remove.push(h);
+            other.push(homes[h]);
             continue;
           }
         }
@@ -1482,10 +1593,13 @@ export default {
         }
       }
 
+      // console.log(other);
       if (type == "homes") {
         this.homes = homes;
+        this.otherHomes = other;
       } else if (type == "qmis") {
         this.QMIs = homes;
+        this.otherQMIs = other;
       }
     },
   },

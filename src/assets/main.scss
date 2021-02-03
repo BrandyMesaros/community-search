@@ -3,9 +3,54 @@ $KhovDarkBlue: #599097;
 $KhovOrange: #FB9536;
 $DarkGrey: #545b62;
 
+// @font-face {
+//   font-family: "Raleway";
+//   src: local("Raleway"),
+//    url(../fonts/Raleway-100.ttf) format("truetype");
+// }
+
+
+// @font-face {
+//   font-family: "Raleway-300";
+//   src: local("Raleway"),
+//    url(../fonts/Raleway-300.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: "Raleway-400";
+//   src: local("Raleway"),
+//    url(../fonts/Raleway-400.ttf) format("truetype");
+// }
+
+
+// @font-face {
+//   font-family: "Raleway-600";
+//   src: local("Raleway"),
+//    url(../fonts/Raleway-600.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: "Raleway-700";
+//   src: local("Raleway"),
+//    url(../fonts/Raleway-700.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: "Raleway-800";
+//   src: local("Raleway"),
+//    url(../fonts/Raleway-800.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: "Raleway-900";
+//   src: local("Raleway"),
+//    url(../fonts/Raleway-900.ttf) format("truetype");
+// }
+
 html {
     position: relative;
     min-height: 125%;
+    font-size: .8rem;
 }
 
 body{
