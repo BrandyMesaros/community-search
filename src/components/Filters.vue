@@ -21,6 +21,41 @@
         ></b-icon>
       </b-row>
 
+      <b-modal
+        ref="my-modal"
+        hide-footer
+        centered
+        title="Output Copied to Clipboard"
+        v-model="modalVisible"
+      >
+        <div id="outputInfo">
+          <b>Beds: </b> {{ this.filters.bedrooms }} <br />
+          <b>Baths: </b> {{ this.filters.bathrooms }} <br />
+          <b>Min Price: </b>
+          <span v-if="this.filters.minPrice != ''">
+            {{ this.filters.minPrice | toCurrency }}</span
+          >
+          <span v-else> NONE </span> <br />
+          <b>Max Price: </b>
+          <span v-if="this.filters.maxPrice != ''">
+            {{ this.filters.maxPrice | toCurrency }}</span
+          >
+          <span v-else> NONE </span> <br />
+
+          <b>Move in Date: </b>
+          <span v-if="this.filters.moveInDate != ''">
+            {{ this.filters.moveInDate }}
+          </span>
+          <span v-else> NONE </span> <br />
+
+          <b>Location: </b>
+          <span v-if="this.filters.location != null">
+            {{ this.filters.location }}
+          </span>
+          <span v-else> NONE </span> <br />
+        </div>
+      </b-modal>
+
       <b-collapse id="collapse-filter" v-model="visible" class="mt-2">
         <b-row>
           <!--FIRST COLUMN-->
@@ -325,6 +360,14 @@
           @dismiss-count-down="countDownChanged"
         >
           Save Successful!
+
+          <b-button size="sm" text="Copy Output" v-on:click="copy('output')"
+            >Copy Output</b-button
+          >
+
+          <b-button size="sm" text="Copy URL" v-on:click="copy('URL')"
+            >Copy URL</b-button
+          >
         </b-alert>
         <b-row>
           <b-col class="col-md-6">
@@ -388,6 +431,7 @@ export default {
       communityID: "",
       communityType: [],
       visible: true,
+      modalVisible: false,
       toast: false,
       datalist: [],
       homeTypes: [],
@@ -433,6 +477,7 @@ export default {
         email: this.$route.query.email,
         phone: this.$route.query.phone,
         communityID: "",
+        showOgCom: true,
       },
       partitionKey: "",
       created: "",
@@ -581,6 +626,7 @@ export default {
       var info = await this.TableAPI(method, header, body);
 
       if (info != null && info.value != null && info.value.length > 0) {
+        this.showOgCom = false;
         var saved = info.value[0];
 
         this.filters.location = saved.Location;
@@ -834,6 +880,70 @@ export default {
     },
     countDownChanged(dismissCountDown) {
       this.alertCountDown = dismissCountDown;
+    },
+    copy(val) {
+      var _this = this;
+      var nVal;
+
+      console.log(window.location.href);
+
+      if (val == "output") {
+        var beds =
+          this.filters.bedrooms == "Any"
+            ? this.filters.bedrooms
+            : this.filters.bedrooms + "+";
+        var baths =
+          this.filters.bathrooms == "Any"
+            ? this.filters.bathrooms
+            : this.filters.bathrooms + "+";
+        var minPrice =
+          this.filters.minPrice != "" ? "$" + this.filters.minPrice : "None";
+        var maxPrice =
+          this.filters.maxPrice != "" ? "$" + this.filters.maxPrice : "None";
+        var moveInDate =
+          this.filters.moveInDate != "" ? this.filters.moveInDate : "None";
+        var location =
+          this.filters.location != null ? this.filters.location : "None";
+
+        nVal =
+          "Beds: " +
+          beds +
+          "\r\nBaths: " +
+          baths +
+          "\r\nMin Price: " +
+          minPrice +
+          "\r\nMax Price: " +
+          maxPrice +
+          "\r\nMove in Date: " +
+          moveInDate +
+          "\r\nLocation: " +
+          location;
+
+        // this.$refs["my-modal"]
+        //   .show()
+        this.modalVisible = true;
+        this.$copyText(nVal);
+      } else if (val == "URL") {
+        nVal = window.location.href;
+
+        this.$copyText(nVal).then(
+          function (e) {
+            _this.makeToast("success", "Success", "Copied: " + nVal);
+          },
+          function (e) {
+            _this.makeToast("danger", "Failed", "Failed to copy");
+          }
+        );
+      }
+    },
+    makeToast(variant = null, title, msg) {
+      this.$bvToast.toast(msg, {
+        title: title,
+        autoHideDelay: 1000,
+        appendToast: true,
+        solid: true,
+        variant: variant,
+      });
     },
     clear() {
       this.filters.location = "";

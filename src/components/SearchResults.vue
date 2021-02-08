@@ -123,12 +123,13 @@
                 <div v-html="home.Description"></div>
               </b-list-group-item>   
               </div>
+              </div>
 
-  <div  v-for="(home, h) in com.HomeDesigns" :key="home + '2' + h">
+ <div v-for="(com, i) in communities" :key="i">
+  <div  v-for="(home, h) in com.HomeDesigns" :key="h">
               <b-list-group-item
                 v-if="otherHomes.includes(home)"
                @click="openInfo(com, home, null)"
-                :key="home.HomeDesignNumber + '2' + h"
                 href="#"
                 class="flex-column align-items-start"
               >
@@ -494,7 +495,7 @@
         <b-tab title="Community" v-if="infoData != null" lazy>
            <!-- Community-->
          <div class="community">
-             <h4> The Community  </h4>
+             <h4> {{ infoData.CommunityName }}  </h4>
           <div class="meta-data">
             <b class="text-muted"
               >{{ infoData.CommunityCity }}, {{ infoData.CommunityState }} |
@@ -846,28 +847,6 @@ export default {
       sidebarTabIndex: 0,
     };
   },
-  mounted: async function () {
-    var path = this.$route.path;
-
-    if (path != "" && path != "/") {
-      var search = path.replace("/", "");
-
-      var s = 'CommunityID:("' + search + '")';
-
-      var body = {
-        search: s,
-        searchMode: "any",
-        queryType: "full",
-        count: "true",
-        top: 5,
-      };
-
-      var com = await this.SearchAPI(body);
-      if (com != null && (com.value != null) & (com.value.length > 0)) {
-        this.openInfo(com.value[0], null, null);
-      }
-    }
-  },
   watch: {
     filterQuery: {
       async handler(val) {
@@ -875,357 +854,379 @@ export default {
         this.homes = [];
         this.QMIs = [];
 
-        //Start creating search/filters
-        var search = [];
-        var searchFields = [];
-        var filter = "";
+        if (this.filterQuery.showOgCom == true) {
+          var path = this.$route.path;
+          if (path != "" && path != "/") {
+            var search2 = path.replace("/", "");
+            var s = 'CommunityID:("' + search2 + '")';
+            var body2 = {
+              search: s,
+              searchMode: "any",
+              queryType: "full",
+              count: "true",
+              top: 5,
+            };
+            var com = await this.SearchAPI(body2);
+            if (com != null && (com.value != null) & (com.value.length > 0)) {
+              this.openInfo(com.value[0], null, null);
+            }
 
-        //Location
-        if (this.filterQuery.radius != 0) {
-          var long = this.filterQuery.locationLong;
-          var lat = this.filterQuery.locationLat;
-          var miles = await this.ConvertToMeters(this.filterQuery.radius);
-
-          if (filter != "") {
-            filter +=
-              " and geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
-              long +
-              " " +
-              lat +
-              ")') le " +
-              miles;
-          } else {
-            filter +=
-              "geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
-              long +
-              " " +
-              lat +
-              ")') le " +
-              miles;
+            this.GetHomes(s, "", "", "", 0);
+            this.filterQuery.showOgCom = false;
           }
         } else {
+          //Start creating search/filters
+          var search = [];
+          var searchFields = [];
+          var filter = "";
+
+          //Location
+          if (this.filterQuery.radius != 0) {
+            var long = this.filterQuery.locationLong;
+            var lat = this.filterQuery.locationLat;
+            var miles = await this.ConvertToMeters(this.filterQuery.radius);
+
+            if (filter != "") {
+              filter +=
+                " and geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
+                long +
+                " " +
+                lat +
+                ")') le " +
+                miles;
+            } else {
+              filter +=
+                "geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
+                long +
+                " " +
+                lat +
+                ")') le " +
+                miles;
+            }
+          } else {
+            if (
+              this.filterQuery.location != null &&
+              this.filterQuery.location != ""
+            ) {
+              if (
+                this.filterQuery.locationCity == null ||
+                this.filterQuery.locationCity == ""
+              ) {
+                this.filterQuery.locationCity = "''";
+              }
+              if (
+                this.filterQuery.locationState == null ||
+                this.filterQuery.locationState == ""
+              ) {
+                this.filterQuery.locationState = "''";
+              }
+              if (
+                this.filterQuery.locationZip == null ||
+                this.filterQuery.locationZip == ""
+              ) {
+                this.filterQuery.locationZip = "''";
+              }
+
+              search.push(
+                "CommunityCity:(" +
+                  this.filterQuery.locationCity +
+                  ") AND CommunityState:(" +
+                  this.filterQuery.locationState +
+                  ") AND CommunityZip:(" +
+                  this.filterQuery.locationZip +
+                  ")"
+              );
+            }
+          }
+
+          //Price Range
           if (
-            this.filterQuery.location != null &&
-            this.filterQuery.location != ""
+            this.filterQuery.minPrice != "" &&
+            this.filterQuery.maxPrice != ""
           ) {
-            if (
-              this.filterQuery.locationCity == null ||
-              this.filterQuery.locationCity == ""
-            ) {
-              this.filterQuery.locationCity = "''";
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Price ge " +
+                this.filterQuery.minPrice +
+                " and h/Price le " +
+                this.filterQuery.maxPrice +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Price ge " +
+                this.filterQuery.minPrice +
+                " and h/Price le " +
+                this.filterQuery.maxPrice +
+                ")";
             }
-            if (
-              this.filterQuery.locationState == null ||
-              this.filterQuery.locationState == ""
-            ) {
-              this.filterQuery.locationState = "''";
+          }
+          if (
+            this.filterQuery.minPrice == "" &&
+            this.filterQuery.maxPrice != ""
+          ) {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Price le " +
+                this.filterQuery.maxPrice +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Price le " +
+                this.filterQuery.maxPrice +
+                ")";
             }
-            if (
-              this.filterQuery.locationZip == null ||
-              this.filterQuery.locationZip == ""
-            ) {
-              this.filterQuery.locationZip = "''";
-            }
-
-            search.push(
-              "CommunityCity:(" +
-                this.filterQuery.locationCity +
-                ") AND CommunityState:(" +
-                this.filterQuery.locationState +
-                ") AND CommunityZip:(" +
-                this.filterQuery.locationZip +
-                ")"
-            );
           }
-        }
-
-        //Price Range
-        if (
-          this.filterQuery.minPrice != "" &&
-          this.filterQuery.maxPrice != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              " and h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              " and h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minPrice == "" &&
-          this.filterQuery.maxPrice != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minPrice != "" &&
-          this.filterQuery.maxPrice == ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              ")";
-          }
-        }
-
-        //Home Type
-        if (
-          this.filterQuery.homeType.length != null &&
-          this.filterQuery.homeType.length > 0
-        ) {
-          var ss = "";
-
-          for (var ii = 0; ii < this.filterQuery.homeType.length; ii++) {
-            ss += "'" + this.filterQuery.homeType[ii] + "'";
-            if (ii + 1 < this.filterQuery.homeType.length) {
-              ss += " OR ";
+          if (
+            this.filterQuery.minPrice != "" &&
+            this.filterQuery.maxPrice == ""
+          ) {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Price ge " +
+                this.filterQuery.minPrice +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Price ge " +
+                this.filterQuery.minPrice +
+                ")";
             }
           }
 
-          search.push("HomeDesigns/HomeDesignType:(" + ss + ")");
-        }
+          //Home Type
+          if (
+            this.filterQuery.homeType.length != null &&
+            this.filterQuery.homeType.length > 0
+          ) {
+            var ss = "";
 
-        //Bedrooms
-        if (this.filterQuery.bedrooms != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Bedrooms ge " +
-              this.filterQuery.bedrooms +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Bedrooms ge " +
-              this.filterQuery.bedrooms +
-              ")";
-          }
-        }
+            for (var ii = 0; ii < this.filterQuery.homeType.length; ii++) {
+              ss += "'" + this.filterQuery.homeType[ii] + "'";
+              if (ii + 1 < this.filterQuery.homeType.length) {
+                ss += " OR ";
+              }
+            }
 
-        //Bathrooms
-        if (this.filterQuery.bathrooms != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Bathrooms ge " +
-              this.filterQuery.bathrooms +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Bathrooms ge " +
-              this.filterQuery.bathrooms +
-              ")";
+            search.push("HomeDesigns/HomeDesignType:(" + ss + ")");
           }
-        }
 
-        //Garages
-        if (this.filterQuery.garages != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Garages ge " +
-              this.filterQuery.garages +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Garages ge " +
-              this.filterQuery.garages +
-              ")";
-          }
-        }
-
-        //Stories
-        if (this.filterQuery.stories != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Stories ge " +
-              this.filterQuery.stories +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Stories ge " +
-              this.filterQuery.stories +
-              ")";
-          }
-        }
-
-        //Has QMIs
-        if (this.filterQuery.QMIStatus == "yes_QMI") {
-          if (filter != "") {
-            filter += " and HomeDesigns/any (h: h/HasQMI eq true)";
-          } else {
-            filter += "HomeDesigns/any (h: h/HasQMI eq true)";
-          }
-        }
-
-        //SQFT
-        if (
-          this.filterQuery.minSqFootage != "" &&
-          this.filterQuery.maxSqFootage != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              " and h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              " and h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minSqFootage == "" &&
-          this.filterQuery.maxSqFootage != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minSqFootage != "" &&
-          this.filterQuery.maxSqFootage == ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              ")";
-          }
-        }
-
-        //Move in date
-        if (this.filterQuery.moveInDate != "") {
-          var d = new Date(this.filterQuery.moveInDate);
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
-              d.toISOString() +
-              "))";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
-              d.toISOString() +
-              "))";
-          }
-        }
-
-        //Brand Name
-        if (
-          this.filterQuery.brand.length != null &&
-          this.filterQuery.brand.length > 0
-        ) {
-          var br = "";
-
-          for (var b = 0; b < this.filterQuery.brand.length; b++) {
-            br += "'" + this.filterQuery.brand[b] + "'";
-            if (b + 1 < this.filterQuery.brand.length) {
-              br += " OR ";
+          //Bedrooms
+          if (this.filterQuery.bedrooms != "Any") {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Bedrooms ge " +
+                this.filterQuery.bedrooms +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Bedrooms ge " +
+                this.filterQuery.bedrooms +
+                ")";
             }
           }
 
-          search.push('CommunityBrandName:("' + br + '")');
-        }
-
-        //Ammenities
-        if (
-          this.filterQuery.amenities.length != null &&
-          this.filterQuery.amenities.length > 0
-        ) {
-          var am = "";
-
-          for (var a = 0; a < this.filterQuery.amenities.length; a++) {
-            am += "'" + this.filterQuery.amenities[a] + "'";
-            if (a + 1 < this.filterQuery.amenities.length) {
-              am += " AND ";
+          //Bathrooms
+          if (this.filterQuery.bathrooms != "Any") {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Bathrooms ge " +
+                this.filterQuery.bathrooms +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Bathrooms ge " +
+                this.filterQuery.bathrooms +
+                ")";
             }
           }
 
-          search.push('HomeDesigns/Amenities:("' + am + '")');
-        }
-
-        var searchString = "";
-        var searchFilterString = "";
-
-        if (search != undefined) {
-          for (var j = 0; j < search.length; j++) {
-            searchString += search[j].toString();
-
-            if (j < search.length - 1) {
-              searchString += " AND ";
+          //Garages
+          if (this.filterQuery.garages != "Any") {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Garages ge " +
+                this.filterQuery.garages +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Garages ge " +
+                this.filterQuery.garages +
+                ")";
             }
           }
-        }
 
-        if (searchFields != null) {
-          for (var jj = 0; jj < searchFields.length; jj++) {
-            searchFilterString += searchFields[jj].toString();
-
-            if (jj < searchFields.length - 1) {
-              searchFilterString += ", ";
+          //Stories
+          if (this.filterQuery.stories != "Any") {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Stories ge " +
+                this.filterQuery.stories +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Stories ge " +
+                this.filterQuery.stories +
+                ")";
             }
           }
+
+          //Has QMIs
+          if (this.filterQuery.QMIStatus == "yes_QMI") {
+            if (filter != "") {
+              filter += " and HomeDesigns/any (h: h/HasQMI eq true)";
+            } else {
+              filter += "HomeDesigns/any (h: h/HasQMI eq true)";
+            }
+          }
+
+          //SQFT
+          if (
+            this.filterQuery.minSqFootage != "" &&
+            this.filterQuery.maxSqFootage != ""
+          ) {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Sqft ge " +
+                this.filterQuery.minSqFootage +
+                " and h/Sqft le " +
+                this.filterQuery.maxSqFootage +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Sqft ge " +
+                this.filterQuery.minSqFootage +
+                " and h/Sqft le " +
+                this.filterQuery.maxSqFootage +
+                ")";
+            }
+          }
+          if (
+            this.filterQuery.minSqFootage == "" &&
+            this.filterQuery.maxSqFootage != ""
+          ) {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Sqft le " +
+                this.filterQuery.maxSqFootage +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Sqft le " +
+                this.filterQuery.maxSqFootage +
+                ")";
+            }
+          }
+          if (
+            this.filterQuery.minSqFootage != "" &&
+            this.filterQuery.maxSqFootage == ""
+          ) {
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/Sqft ge " +
+                this.filterQuery.minSqFootage +
+                ")";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/Sqft ge " +
+                this.filterQuery.minSqFootage +
+                ")";
+            }
+          }
+
+          //Move in date
+          if (this.filterQuery.moveInDate != "") {
+            var d = new Date(this.filterQuery.moveInDate);
+            if (filter != "") {
+              filter +=
+                " and HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
+                d.toISOString() +
+                "))";
+            } else {
+              filter +=
+                "HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
+                d.toISOString() +
+                "))";
+            }
+          }
+
+          //Brand Name
+          if (
+            this.filterQuery.brand.length != null &&
+            this.filterQuery.brand.length > 0
+          ) {
+            var br = "";
+
+            for (var b = 0; b < this.filterQuery.brand.length; b++) {
+              br += "'" + this.filterQuery.brand[b] + "'";
+              if (b + 1 < this.filterQuery.brand.length) {
+                br += " OR ";
+              }
+            }
+
+            search.push('CommunityBrandName:("' + br + '")');
+          }
+
+          //Ammenities
+          if (
+            this.filterQuery.amenities.length != null &&
+            this.filterQuery.amenities.length > 0
+          ) {
+            var am = "";
+
+            for (var a = 0; a < this.filterQuery.amenities.length; a++) {
+              am += "'" + this.filterQuery.amenities[a] + "'";
+              if (a + 1 < this.filterQuery.amenities.length) {
+                am += " AND ";
+              }
+            }
+
+            search.push('HomeDesigns/Amenities:("' + am + '")');
+          }
+
+          var searchString = "";
+          var searchFilterString = "";
+
+          if (search != undefined) {
+            for (var j = 0; j < search.length; j++) {
+              searchString += search[j].toString();
+
+              if (j < search.length - 1) {
+                searchString += " AND ";
+              }
+            }
+          }
+
+          if (searchFields != null) {
+            for (var jj = 0; jj < searchFields.length; jj++) {
+              searchFilterString += searchFields[jj].toString();
+
+              if (jj < searchFields.length - 1) {
+                searchFilterString += ", ";
+              }
+            }
+          }
+
+          this.currentSearch = searchString;
+          this.currentSearchFields = searchFilterString;
+          this.currentFilter = filter;
+
+          // console.log(search);
+          // console.log("search: " + this.currentSearch);
+          // console.log("fields: " + this.currentSearchFields);
+          // console.log("filter: " + this.currentFilter);
+
+          this.communitiesCurrentPage = 1;
+          this.hdCurrentPage = 1;
+          this.qmiCurrentPage = 1;
+
+          this.GetHomes(
+            this.currentSearch,
+            this.currentSearchFields,
+            filter,
+            "",
+            0
+          );
         }
-
-        this.currentSearch = searchString;
-        this.currentSearchFields = searchFilterString;
-        this.currentFilter = filter;
-
-        // console.log(search);
-        // console.log("search: " + this.currentSearch);
-        // console.log("fields: " + this.currentSearchFields);
-        // console.log("filter: " + this.currentFilter);
-
-        this.communitiesCurrentPage = 1;
-        this.hdCurrentPage = 1;
-        this.qmiCurrentPage = 1;
-
-        this.GetHomes(
-          this.currentSearch,
-          this.currentSearchFields,
-          filter,
-          "",
-          0
-        );
       },
       deep: true,
     },
@@ -1397,6 +1398,8 @@ export default {
       return meters;
     },
     openInfo(comData, homeData, qmiData) {
+      this.visible == false;
+
       this.infoData = null;
       this.homeData = null;
       this.qmiData = null;
@@ -1417,7 +1420,8 @@ export default {
       this.homeData = homeData;
       this.qmiData = qmiData;
 
-      this.visible = !this.visible;
+      // this.visible = !this.visible;
+      this.visible = true;
     },
     copy(val) {
       var _this = this;
@@ -1593,7 +1597,6 @@ export default {
         }
       }
 
-      // console.log(other);
       if (type == "homes") {
         this.homes = homes;
         this.otherHomes = other;
