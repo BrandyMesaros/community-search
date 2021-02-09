@@ -845,6 +845,7 @@ export default {
       suggestions: [],
       hasQMIs: false,
       sidebarTabIndex: 0,
+      stopShowing: false,
     };
   },
   mounted: async function () {
@@ -1207,7 +1208,8 @@ export default {
         if (
           searchString == "" &&
           filter == "" &&
-          this.currentSearchFields == ""
+          this.currentSearchFields == "" &&
+          this.stopShowing == false
         ) {
           //CommunityID
           var path = this.$route.path;
@@ -1231,28 +1233,30 @@ export default {
               this.GetHomes(s, "", "", "", 0);
             }
           }
+        } else {
+          this.currentSearch = searchString;
+          this.currentSearchFields = searchFilterString;
+          this.currentFilter = filter;
+
+          // console.log(search);
+          // console.log("search: " + this.currentSearch);
+          // console.log("fields: " + this.currentSearchFields);
+          // console.log("filter: " + this.currentFilter);
+
+          this.communitiesCurrentPage = 1;
+          this.hdCurrentPage = 1;
+          this.qmiCurrentPage = 1;
+
+          this.GetHomes(
+            this.currentSearch,
+            this.currentSearchFields,
+            filter,
+            "",
+            0
+          );
         }
 
-        this.currentSearch = searchString;
-        this.currentSearchFields = searchFilterString;
-        this.currentFilter = filter;
-
-        // console.log(search);
-        // console.log("search: " + this.currentSearch);
-        // console.log("fields: " + this.currentSearchFields);
-        // console.log("filter: " + this.currentFilter);
-
-        this.communitiesCurrentPage = 1;
-        this.hdCurrentPage = 1;
-        this.qmiCurrentPage = 1;
-
-        this.GetHomes(
-          this.currentSearch,
-          this.currentSearchFields,
-          filter,
-          "",
-          0
-        );
+        this.stopShowing = true;
       },
       deep: true,
     },
