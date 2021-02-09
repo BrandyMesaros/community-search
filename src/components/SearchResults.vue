@@ -866,6 +866,12 @@ export default {
     //     this.GetHomes(s, "", "", "", 0);
     //   }
     // }
+
+    var path = this.$route.path;
+
+    if (path == "" || path == "/") {
+      this.GetHomes("", "", "", "", 0);
+    }
   },
   watch: {
     filterQuery: {
@@ -1238,10 +1244,10 @@ export default {
           this.currentSearchFields = searchFilterString;
           this.currentFilter = filter;
 
-          // console.log(search);
-          // console.log("search: " + this.currentSearch);
-          // console.log("fields: " + this.currentSearchFields);
-          // console.log("filter: " + this.currentFilter);
+          console.log(search);
+          console.log("search: " + this.currentSearch);
+          console.log("fields: " + this.currentSearchFields);
+          console.log("filter: " + this.currentFilter);
 
           this.communitiesCurrentPage = 1;
           this.hdCurrentPage = 1;
@@ -1353,6 +1359,8 @@ export default {
         top: 500,
         skip: skipNum,
       };
+
+      console.log(body);
 
       var response = await this.SearchAPI(body);
 
