@@ -849,28 +849,21 @@ export default {
     };
   },
   mounted: async function () {
-    // var path = this.$route.path;
-    // if (path != "" && path != "/") {
-    //   var search = path.replace("/", "");
-    //   var s = 'CommunityID:("' + search + '")';
-    //   var body = {
-    //     search: s,
-    //     searchMode: "any",
-    //     queryType: "full",
-    //     count: "true",
-    //     top: 5,
-    //   };
-    //   var com = await this.SearchAPI(body);
-    //   if (com != null && (com.value != null) & (com.value.length > 0)) {
-    //     // this.openInfo(com.value[0], null, null);
-    //     this.GetHomes(s, "", "", "", 0);
-    //   }
-    // }
-
     var path = this.$route.path;
-
-    if (path == "" || path == "/") {
-      this.GetHomes("", "", "", "", 0);
+    if (path != "" && path != "/") {
+      var search = path.replace("/", "");
+      var s = 'CommunityID:("' + search + '")';
+      var body = {
+        search: s,
+        searchMode: "any",
+        queryType: "full",
+        count: "true",
+        top: 5,
+      };
+      var com = await this.SearchAPI(body);
+      if (com != null && (com.value != null) & (com.value.length > 0)) {
+        this.openInfo(com.value[0], null, null);
+      }
     }
   },
   watch: {
@@ -1211,56 +1204,26 @@ export default {
           }
         }
 
-        if (
-          searchString == "" &&
-          filter == "" &&
-          this.currentSearchFields == "" &&
-          this.stopShowing == false
-        ) {
-          //CommunityID
-          var path = this.$route.path;
+        this.currentSearch = searchString;
+        this.currentSearchFields = searchFilterString;
+        this.currentFilter = filter;
 
-          if (path != "" && path != "/") {
-            var search2 = path.replace("/", "");
+        console.log(search);
+        console.log("search: " + this.currentSearch);
+        console.log("fields: " + this.currentSearchFields);
+        console.log("filter: " + this.currentFilter);
 
-            var s = 'CommunityID:("' + search2 + '")';
+        this.communitiesCurrentPage = 1;
+        this.hdCurrentPage = 1;
+        this.qmiCurrentPage = 1;
 
-            var body2 = {
-              search: s,
-              searchMode: "any",
-              queryType: "full",
-              count: "true",
-              top: 5,
-            };
-
-            var com = await this.SearchAPI(body2);
-            if (com != null && (com.value != null) & (com.value.length > 0)) {
-              this.openInfo(com.value[0], null, null);
-              this.GetHomes(s, "", "", "", 0);
-            }
-          }
-        } else {
-          this.currentSearch = searchString;
-          this.currentSearchFields = searchFilterString;
-          this.currentFilter = filter;
-
-          console.log(search);
-          console.log("search: " + this.currentSearch);
-          console.log("fields: " + this.currentSearchFields);
-          console.log("filter: " + this.currentFilter);
-
-          this.communitiesCurrentPage = 1;
-          this.hdCurrentPage = 1;
-          this.qmiCurrentPage = 1;
-
-          this.GetHomes(
-            this.currentSearch,
-            this.currentSearchFields,
-            filter,
-            "",
-            0
-          );
-        }
+        this.GetHomes(
+          this.currentSearch,
+          this.currentSearchFields,
+          filter,
+          "",
+          0
+        );
 
         this.stopShowing = true;
       },
