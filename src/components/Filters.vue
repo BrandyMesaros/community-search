@@ -417,6 +417,9 @@ var tableHeaders = {
 };
 
 var SAS = process.env.VUE_APP_TABLE_SAS;
+var tableURL = process.env.VUE_APP_TABLE_URL;
+var searchURL = process.env.VUE_APP_FULL_SEARCHURL;
+var key = process.env.VUE_APP_MAP_KEY;
 
 export default {
   router,
@@ -530,11 +533,7 @@ export default {
       var val;
 
       await axios
-        .post(
-          "https://ingen-internal-demo.search.windows.net/indexes/khov-feed-data/docs/search?api-version=2020-06-30&search=*",
-          body,
-          { headers }
-        )
+        .post(searchURL, body, { headers })
         .then((response) => {
           if (response.data.value != "") {
             val = response.data;
@@ -554,10 +553,7 @@ export default {
         case "merge":
           await axios({
             method: "merge",
-            url:
-              "https://sftpstgmmevl55akvtbc.table.core.windows.net/TEST" +
-              header +
-              SAS,
+            url: tableURL + header + SAS,
             data: body,
             // headers: tableHeaders
           })
@@ -577,13 +573,7 @@ export default {
 
         case "getFilters":
           await axios
-            .get(
-              "https://sftpstgmmevl55akvtbc.table.core.windows.net/TEST()" +
-                SAS +
-                header,
-              body,
-              { tableHeaders }
-            )
+            .get(tableURL + "()" + SAS + header, body, { tableHeaders })
             .then((response) => {
               if (response.data.value != "") {
                 val = response.data;
@@ -713,6 +703,7 @@ export default {
         for (var n in places) {
           this.datalist.push(places[n].value);
         }
+        this.datalist.sort();
       }
     },
     async SaveFilters() {
@@ -805,7 +796,6 @@ export default {
     GetCoordinates() {
       this.suggested = [];
 
-      var key = "jHXzLOl_rAm6GnrNK-bnneuN_FO2IYRcTNv8cMEZBtw";
       var url =
         "https://atlas.microsoft.com/search/address/json?subscription-key=" +
         key +
@@ -828,7 +818,6 @@ export default {
     async getLongLat(newLocation) {
       this.oldLocation = newLocation;
 
-      var key = "jHXzLOl_rAm6GnrNK-bnneuN_FO2IYRcTNv8cMEZBtw";
       var url =
         "https://atlas.microsoft.com/search/address/json?subscription-key=" +
         key +
@@ -919,8 +908,6 @@ export default {
           "\r\nLocation: " +
           location;
 
-        // this.$refs["my-modal"]
-        //   .show()
         this.modalVisible = true;
         this.$copyText(nVal);
       } else if (val == "URL") {

@@ -1,9 +1,5 @@
 <template>
-<div>
-
-  HELLO
-  </div>
-
+  <div>HELLO</div>
 </template>
 
 <script>
@@ -28,7 +24,7 @@ export default {
     communityID: {
       handler(val) {
         this.ID = this.communityID;
-         this.GetCommunityInfo(this.ID);      
+        this.GetCommunityInfo(this.ID);
       },
       deep: true,
     },
@@ -41,7 +37,7 @@ export default {
         searchMode: "any",
         filter: "",
         orderby: "",
-        queryType: "full",
+        queryType: "simple",
         count: "true",
         skip: skipNum,
       };
@@ -50,6 +46,7 @@ export default {
         "api-key": "9C1C5C83AD4C99EA824FD8742F051ECF",
         "Content-Type": "application/json",
       };
+      var searchURL = process.env.VUE_APP_FULL_SEARCHURL;
 
       axios
         .post(

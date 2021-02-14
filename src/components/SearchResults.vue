@@ -92,18 +92,16 @@
           </p>
 
           <b-list-group v-if="homes != null" id="homesList">
-            <div v-for="(com, i) in communities" :key="com.CommunityID + i">
-              <div  v-for="(home, h) in com.HomeDesigns" :key="home + h">
+              <div  v-for="(com, h) in homes" :key="com + h">
               <b-list-group-item
-                v-if="homes.includes(home)"
-               @click="openInfo(com, home, null)"
-                :key="home.HomeDesignNumber + h"
+               @click="openInfo(com)"
+                :key="com.HomeDesigns[0].HomeDesignNumber + h"
                 href="#"
                 class="flex-column align-items-start"
               >
                 <div class="d-flex w-100 justify-content-between">
                   <h5 class="mb-1">
-                    {{ home.HomeDesignName }} - {{ com.CommunityName }} <b-icon icon="check-circle-fill" style="color: #9dc47d;"></b-icon>
+                    {{ com.HomeDesigns[0].HomeDesignName }} - {{ com.CommunityName }} <b-icon icon="check-circle-fill" style="color: #9dc47d;"></b-icon>
                   </h5>
                 <b v-if="com.CommunityStatus == 'ComingSoon'" class="comingSoon">{{ com.CommunityStatus.replace(/([A-Z])/g, ' $1').trim() }}</b>
                 <b v-if="com.CommunityStatus == 'Active'" class="activeStatus">{{ com.CommunityStatus }}</b>
@@ -113,19 +111,18 @@
      </div>
 
                 <div class="meta-data">
-                  <b class="text-muted">{{ home.HomeDesignType }}</b> |
-                  <b class="text-muted">{{ home.Bedrooms }} Bedrooms</b> |
-                  <b class="text-muted">{{ home.Bathrooms }} Bathrooms</b> |
-                  <b class="text-muted">{{ home.Sqft }} Sqft</b> |
-                  <b class="text-muted">{{ home.Price | toCurrency }}</b>
+                  <b class="text-muted">{{ com.HomeDesigns[0].HomeDesignType }}</b> |
+                  <b class="text-muted">{{ com.HomeDesigns[0].Bedrooms }} Bedrooms</b> |
+                  <b class="text-muted">{{ com.HomeDesigns[0].Bathrooms }} Bathrooms</b> |
+                  <b class="text-muted">{{ com.HomeDesigns[0].Sqft }} Sqft</b> |
+                  <b class="text-muted">{{ com.HomeDesigns[0].Price | toCurrency }}</b>
                 </div>
 
-                <div v-html="home.Description"></div>
+                <div v-html="com.HomeDesigns[0].Description"></div>
               </b-list-group-item>   
               </div>
-              </div>
 
- <div v-for="(com, i) in communities" :key="i">
+ <!-- <div v-for="(com, i) in communities" :key="i">
   <div  v-for="(home, h) in com.HomeDesigns" :key="h">
               <b-list-group-item
                 v-if="otherHomes.includes(home)"
@@ -155,7 +152,7 @@
                 <div v-html="home.Description"></div>
               </b-list-group-item>   
             </div>
-              </div>
+              </div> -->
           </b-list-group>
         </b-tab>
 
@@ -184,28 +181,20 @@
           </p>
 
           <b-list-group v-if="QMIs != null" id="QMIList">
-            <div
-              v-for="(home, h) in communities"
-              :key="home.CommunityID + 'QMI' + h"
-            >
               <div
-                v-for="(hd, i) in home.HomeDesigns"
-                :key="hd.HomeDesignNumber + 'QMI' + i"
-              >
-              <div
-                v-for="(QMI, qmi) in hd.QMIs"
-                :key="QMI + qmi"
+                v-for="(home, qmi) in QMIs"
+                :key="home + qmi"
               >
                 <b-list-group-item
-                  v-if="(QMIs.includes(QMI))"
-                   @click="openInfo(home, hd, QMI)"
-                  :key="QMI.QmiID + qmi"
+                  v-if="(QMIs.includes(home))"
+                   @click="openInfo(home)"
+                  :key="home.HomeDesigns[0].QMIs[0].QmiID + qmi"
                   href="#"
                   class="flex-column align-items-start"
                 >
                   <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">
-                      {{ hd.HomeDesignName }} - {{ QMI.QmiAddress }} -
+                      {{ home.HomeDesigns[0].HomeDesignName }} - {{ home.HomeDesigns[0].QMIs[0].QmiAddress }} -
                       {{ home.CommunityName }} <b-icon icon="check-circle-fill" style="color: #9dc47d;"></b-icon>
                     </h5>
 
@@ -219,18 +208,17 @@
                   </div>
 
                   <div class="meta-data">
-                    <b class="text-muted">{{ hd.HomeDesignType }}</b> |
-                    <b class="text-muted">{{ QMI.QmiBed }} Bedrooms</b> |
-                    <b class="text-muted">{{ QMI.QmiBaths }} Bathrooms</b> |
-                    <b class="text-muted">{{ QMI.QmiSqft }} Sqft</b> |
-                    <b class="text-muted">{{ QMI.QmiPrice | toCurrency }}</b>
+                    <b class="text-muted">{{ home.HomeDesigns[0].HomeDesignType }}</b> |
+                    <b class="text-muted">{{ home.HomeDesigns[0].QMIs[0].QmiBed }} Bedrooms</b> |
+                    <b class="text-muted">{{ home.HomeDesigns[0].QMIs[0].QmiBaths }} Bathrooms</b> |
+                    <b class="text-muted">{{ home.HomeDesigns[0].QMIs[0].QmiSqft }} Sqft</b> |
+                    <b class="text-muted">{{ home.HomeDesigns[0].QMIs[0].QmiPrice | toCurrency }}</b>
                   </div>
 
-                  <div v-html="QMI.QmiDescription"></div>
+                  <div v-html="home.HomeDesigns[0].QMIs[0].QmiDescription"></div>
                 </b-list-group-item>
-                </div>
-                </div>
 
+<!-- 
 <div
                 v-for="(hd, i) in home.HomeDesigns"
                 :key="hd.HomeDesignNumber + 'QMI2' + i"
@@ -272,7 +260,7 @@
                   <div v-html="QMI.QmiDescription"></div>
                 </b-list-group-item>
                 </div>
-                </div>
+                </div> -->
 
             
             </div>
@@ -302,106 +290,12 @@
        v-model="sidebarTabIndex"
       >
        
-             <b-tab title="Home Design" v-if="homeData != null && qmiData == null">
-               <div class="Home Designs">
-              <h4> {{homeData.HomeDesignName}} </h4>
-              <!--price-->
-              <b-row>
-                                  <b-col>
-                  <b-icon icon="tag-fill" variant="success"></b-icon>
-                  Starting at {{ homeData.Price | toCurrency }}
-                </b-col>
-              </b-row>
-              <br>
-
-              <!--First Row-->
-              <b-row>
-                 <b-col>
-                  <b-icon
-                    icon="house-door-fill"
-                    style="color: #fb9536"
-                  ></b-icon>
-                  {{ homeData.HomeDesignType }}
-                </b-col>
-
-                <b-col>
-                  <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
-                  {{ homeData.Sqft }} sqft
-                </b-col>  
-              </b-row>
-
-              <!--Second Row -->
-              <b-row>
-                            
-                <b-col>
-                  <b-icon icon="moon" style="color: #599097"></b-icon>
-                  {{ homeData.Bedrooms }} Bedroom(s)
-                </b-col>
-
-                           <b-col>
-                  <b-icon icon="droplet-fill" variant="primary"></b-icon>
-                  {{ homeData.Bathrooms }} Bathroom(s)
-                </b-col>
-              </b-row>
-              
-              <!--Third row-->
-                <b-row>
-                    
-                <b-col>
-                  <b-icon icon="hammer" style="color: #545b62"></b-icon>
-                  {{ homeData.Garages }} Garage(s)
-                </b-col>
-
-                <b-col>
-                  <b-icon
-                    icon="arrow-up-right-square-fill"
-                    style="color: #86bcc2"
-                  ></b-icon>
-                  {{ homeData.Stories }} Floors(s)
-                </b-col>
-                           </b-row>
-
-                <br/>
-
-                <!--Promotion Row -->
-                 <b-row>
-
-                <b-col v-if="homeData.HasPromotions == true">
-                  <div v-for="(p, index) in homeData.Promotions" :key="p + index">
-                     <b-icon
-                    icon="star-fill"
-                    variant="warning"
-                  ></b-icon><b> Promotion: {{p.PromoHeadline}}</b> <br/> 
-                  {{p.PromoDescription}} <br/>
-                  <a :href="p.PromoUrl" target="_blank">Website URL</a> <b-icon class="notALink" icon="clipboard" @click="copy(p.PromoUrl)"></b-icon>
-                </div>
-                                <br/>
-                </b-col>   
-                  </b-row>
-                
-                <p><b> Description </b> <br />
-                 <span v-html="homeData.Description"></span> </p>
-
-                 <div v-if="homeData.WebsiteURL != undefined && homeData.WebsiteURL.length > 0">
-                 <b>Links</b>
-
-                 <div v-for="(l, index) in homeData.WebsiteURL" :key="l + index"> 
-                   <a  :href="l.TheURL" target="_blank">{{l.Type}}</a> <b-icon class="notALink" icon="clipboard" @click="copy(l.TheURL)"></b-icon>
-
-                 </div>
-
-                 </div>
-                <hr />
-                
-              </div>
-            </b-tab>
-
-            <b-tab title="Quick Move In" v-if="qmiData != null">
-                     <h5> {{homeData.HomeDesignName}}</h5>
+                   <b-tab title="Quick Move In" v-if="infoType == 'QMI' ">
+                     <h5> {{infoData.HomeDesigns[0].HomeDesignName}}</h5>
 
                        <div class="meta-data">
                 <div class="text-muted">
-       <p><b>  {{qmiData.QmiAddress}} </b> <b-icon class="notALink" icon="clipboard" @click="copy(qmiData.QmiAddress)"></b-icon> </p>
+       <p><b>  {{infoData.HomeDesigns[0].QMIs[0].QmiAddress}} </b> <b-icon class="notALink" icon="clipboard" @click="copy(infoData.HomeDesigns[0].QMIs[0].QmiAddress)"></b-icon> </p>
        </div> </div>
 
 
@@ -409,7 +303,7 @@
               <b-row>
                                   <b-col>
                   <b-icon icon="tag-fill" variant="success"></b-icon>
-                  {{ qmiData.QmiPrice | toCurrency }}
+                  {{ infoData.HomeDesigns[0].QMIs[0].QmiPrice | toCurrency }}
                 </b-col>
               </b-row>
               <br>
@@ -421,12 +315,12 @@
                     icon="house-door-fill"
                     style="color: #fb9536"
                   ></b-icon>
-                  {{ homeData.HomeDesignType }}
+                  {{ infoData.HomeDesigns[0].HomeDesignType }}
                 </b-col>
 
                 <b-col>
                   <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
-                  {{ qmiData.QmiSqft }} sqft
+                  {{ infoData.HomeDesigns[0].QMIs[0].QmiSqft }} sqft
                 </b-col>
 
             
@@ -438,12 +332,12 @@
                             
                 <b-col>
                   <b-icon icon="moon" style="color: #599097"></b-icon>
-                  {{ qmiData.QmiBed }} Bedroom(s)
+                  {{ infoData.HomeDesigns[0].QMIs[0].QmiBed }} Bedroom(s)
                 </b-col>
 
                            <b-col>
                   <b-icon icon="droplet-fill" variant="primary"></b-icon>
-                  {{ qmiData.QmiBaths }} Bathroom(s)
+                  {{ infoData.HomeDesigns[0].QMIs[0].QmiBaths }} Bathroom(s)
                 </b-col>                
               </b-row>
               
@@ -452,7 +346,7 @@
                     
                 <b-col>
                   <b-icon icon="hammer" style="color: #545b62"></b-icon>
-                  {{ qmiData.QmiGarages }} Garage(s)
+                  {{ infoData.HomeDesigns[0].QMIs[0].QmiGarages }} Garage(s)
                 </b-col>
 
                 <b-col>
@@ -460,7 +354,7 @@
                     icon="arrow-up-right-square-fill"
                     style="color: #86bcc2"
                   ></b-icon>
-                  {{ qmiData.QmiStories }} Floors(s)
+                  {{ infoData.HomeDesigns[0].QMIs[0].QmiStories }} Floors(s)
                 </b-col>
                 
                 
@@ -473,8 +367,8 @@
                  <b-row>
                     <br/>
 
-                <b-col v-if="homeData.HasPromotions == true">
-                  <div v-for="(p, index) in homeData.Promotions" :key="p + index">
+                <b-col v-if="infoData.HomeDesigns[0].HasPromotions == true">
+                  <div v-for="(p, index) in infoData.HomeDesigns[0].Promotions" :key="p + index">
                      <b-icon
                     icon="star-fill"
                     variant="warning"
@@ -487,12 +381,107 @@
                   <br />
        
        <p><b>Description</b> <br/>
-       <span v-html="qmiData.QmiDescription"></span></p>
+       <span v-html="infoData.HomeDesigns[0].QMIs[0].QmiDescription"></span></p>
 
 <hr />
             </b-tab>
+            
+             <b-tab title="Home Design" v-if="infoType == 'HomeDesign' || infoType == 'QMI'">
+               <div class="Home Designs">
+              <h4> {{infoData.HomeDesigns[0].HomeDesignName}} </h4>
+              <!--price-->
+              <b-row>
+                                  <b-col>
+                  <b-icon icon="tag-fill" variant="success"></b-icon>
+                  Starting at {{ infoData.HomeDesigns[0].Price | toCurrency }}
+                </b-col>
+              </b-row>
+              <br>
 
-        <b-tab title="Community" v-if="infoData != null" lazy>
+              <!--First Row-->
+              <b-row>
+                 <b-col>
+                  <b-icon
+                    icon="house-door-fill"
+                    style="color: #fb9536"
+                  ></b-icon>
+                  {{ infoData.HomeDesigns[0].HomeDesignType }}
+                </b-col>
+
+                <b-col>
+                  <b-icon icon="grid-1x2-fill" variant="secondary"></b-icon>
+                  {{ infoData.HomeDesigns[0].Sqft }} sqft
+                </b-col>  
+              </b-row>
+
+              <!--Second Row -->
+              <b-row>
+                            
+                <b-col>
+                  <b-icon icon="moon" style="color: #599097"></b-icon>
+                  {{ infoData.HomeDesigns[0].Bedrooms }} Bedroom(s)
+                </b-col>
+
+                           <b-col>
+                  <b-icon icon="droplet-fill" variant="primary"></b-icon>
+                  {{ infoData.HomeDesigns[0].Bathrooms }} Bathroom(s)
+                </b-col>
+              </b-row>
+              
+              <!--Third row-->
+                <b-row>
+                    
+                <b-col>
+                  <b-icon icon="hammer" style="color: #545b62"></b-icon>
+                  {{ infoData.HomeDesigns[0].Garages }} Garage(s)
+                </b-col>
+
+                <b-col>
+                  <b-icon
+                    icon="arrow-up-right-square-fill"
+                    style="color: #86bcc2"
+                  ></b-icon>
+                  {{ infoData.HomeDesigns[0].Stories }} Floors(s)
+                </b-col>
+                           </b-row>
+
+                <br/>
+
+                <!--Promotion Row -->
+                 <b-row>
+
+                <b-col v-if="infoData.HomeDesigns[0].HasPromotions == true">
+                  <div v-for="(p, index) in infoData.HomeDesigns[0].Promotions" :key="p + index">
+                     <b-icon
+                    icon="star-fill"
+                    variant="warning"
+                  ></b-icon><b> Promotion: {{p.PromoHeadline}}</b> <br/> 
+                  {{p.PromoDescription}} <br/>
+                  <a :href="p.PromoUrl" target="_blank">Website URL</a> <b-icon class="notALink" icon="clipboard" @click="copy(p.PromoUrl)"></b-icon>
+                </div>
+                                <br/>
+                </b-col>   
+                  </b-row>
+                
+                <p><b> Description </b> <br />
+                 <span v-html="infoData.HomeDesigns[0].Description"></span> </p>
+
+                 <div v-if="infoData.HomeDesigns[0].WebsiteURL != undefined && infoData.HomeDesigns[0].WebsiteURL.length > 0">
+                 <b>Links</b>
+
+                 <div v-for="(l, index) in infoData.HomeDesigns[0].WebsiteURL" :key="l + index"> 
+                   <a  :href="l.TheURL" target="_blank">{{l.Type}}</a> <b-icon class="notALink" icon="clipboard" @click="copy(l.TheURL)"></b-icon>
+
+                 </div>
+
+                 </div>
+                <hr />
+                
+              </div>
+            </b-tab>
+
+
+            <b-tab title="Community" v-if="infoData != null" lazy>
            <!-- Community-->
          <div class="community">
              <h4> {{ infoData.CommunityName }}  </h4>
@@ -550,9 +539,9 @@
             <b>Website URL: </b> <a :href="infoData.CommunityURL" target="_blank"> Link </a> <b-icon class="notALink" icon="clipboard" @click="copy(infoData.CommunityURL)"></b-icon>
             </div>
             <br><br>
-        </b-tab>
+            </b-tab>
 
-          <div v-if="infoData.HomeDesigns.length != 0 && homeData == null">
+          <div v-if="infoData.HomeDesigns.length != 0 && infoType == 'Community'">
         <b-tab title="HDs"  lazy>
           <!--Home Designs-->
             <div class="Home Designs">
@@ -667,7 +656,7 @@
         </b-tab>
           </div>
 
-                <b-tab title="QMIs" v-if="hasQMIs == true && qmiData == null" lazy>
+                <b-tab title="QMIs" v-if="infoData.HomeDesigns.length != 0  && infoData.HomeDesigns[0].QMIs.length != 0   && infoType != 'QMI'" lazy>
    <!--QMIs-->
     <h4> Quick Move Ins </h4>
 <div v-for="(hd, index) in infoData.HomeDesigns" :key="hd+index">
@@ -812,6 +801,7 @@ var headers = {
   "api-key": process.env.VUE_APP_APIKEY,
   "Content-Type": "application/json",
 };
+var searchURL = process.env.VUE_APP_FULL_SEARCHURL;
 
 export default {
   router,
@@ -846,13 +836,24 @@ export default {
       hasQMIs: false,
       sidebarTabIndex: 0,
       stopShowing: false,
+      infoType: "",
     };
   },
   mounted: async function () {
+    var s = "";
+
+    if (this.tabIndex == 0) {
+      s = "Type:(Community) ";
+    } else if (this.tabIndex == 1) {
+      s = "Type:(HomeDesign) ";
+    } else if (this.tabIndex == 2) {
+      s = "Type:(QMI) ";
+    }
+
     var path = this.$route.path;
     if (path != "" && path != "/") {
       var search = path.replace("/", "");
-      var s = 'CommunityID:("' + search + '")';
+      s += ' AND CommunityID:("' + search + '")';
       var body = {
         search: s,
         searchMode: "any",
@@ -869,363 +870,7 @@ export default {
   watch: {
     filterQuery: {
       async handler(val) {
-        this.communities = [];
-        this.homes = [];
-        this.QMIs = [];
-
-        //Start creating search/filters
-        var search = [];
-        var searchFields = [];
-        var filter = "";
-
-        //Location
-        if (this.filterQuery.radius != 0) {
-          var long = this.filterQuery.locationLong;
-          var lat = this.filterQuery.locationLat;
-          var miles = await this.ConvertToMeters(this.filterQuery.radius);
-
-          if (filter != "") {
-            filter +=
-              " and geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
-              long +
-              " " +
-              lat +
-              ")') le " +
-              miles;
-          } else {
-            filter +=
-              "geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
-              long +
-              " " +
-              lat +
-              ")') le " +
-              miles;
-          }
-        } else {
-          if (
-            this.filterQuery.location != null &&
-            this.filterQuery.location != ""
-          ) {
-            if (
-              this.filterQuery.locationCity == null ||
-              this.filterQuery.locationCity == ""
-            ) {
-              this.filterQuery.locationCity = "''";
-            }
-            if (
-              this.filterQuery.locationState == null ||
-              this.filterQuery.locationState == ""
-            ) {
-              this.filterQuery.locationState = "''";
-            }
-            if (
-              this.filterQuery.locationZip == null ||
-              this.filterQuery.locationZip == ""
-            ) {
-              this.filterQuery.locationZip = "''";
-            }
-
-            search.push(
-              "CommunityCity:(" +
-                this.filterQuery.locationCity +
-                ") AND CommunityState:(" +
-                this.filterQuery.locationState +
-                ") AND CommunityZip:(" +
-                this.filterQuery.locationZip +
-                ")"
-            );
-          }
-        }
-
-        //Price Range
-        if (
-          this.filterQuery.minPrice != "" &&
-          this.filterQuery.maxPrice != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              " and h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              " and h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minPrice == "" &&
-          this.filterQuery.maxPrice != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Price le " +
-              this.filterQuery.maxPrice +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minPrice != "" &&
-          this.filterQuery.maxPrice == ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Price ge " +
-              this.filterQuery.minPrice +
-              ")";
-          }
-        }
-
-        //Home Type
-        if (
-          this.filterQuery.homeType.length != null &&
-          this.filterQuery.homeType.length > 0
-        ) {
-          var ss = "";
-
-          for (var ii = 0; ii < this.filterQuery.homeType.length; ii++) {
-            ss += "'" + this.filterQuery.homeType[ii] + "'";
-            if (ii + 1 < this.filterQuery.homeType.length) {
-              ss += " OR ";
-            }
-          }
-
-          search.push("HomeDesigns/HomeDesignType:(" + ss + ")");
-        }
-
-        //Bedrooms
-        if (this.filterQuery.bedrooms != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Bedrooms ge " +
-              this.filterQuery.bedrooms +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Bedrooms ge " +
-              this.filterQuery.bedrooms +
-              ")";
-          }
-        }
-
-        //Bathrooms
-        if (this.filterQuery.bathrooms != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Bathrooms ge " +
-              this.filterQuery.bathrooms +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Bathrooms ge " +
-              this.filterQuery.bathrooms +
-              ")";
-          }
-        }
-
-        //Garages
-        if (this.filterQuery.garages != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Garages ge " +
-              this.filterQuery.garages +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Garages ge " +
-              this.filterQuery.garages +
-              ")";
-          }
-        }
-
-        //Stories
-        if (this.filterQuery.stories != "Any") {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Stories ge " +
-              this.filterQuery.stories +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Stories ge " +
-              this.filterQuery.stories +
-              ")";
-          }
-        }
-
-        //Has QMIs
-        if (this.filterQuery.QMIStatus == "yes_QMI") {
-          if (filter != "") {
-            filter += " and HomeDesigns/any (h: h/HasQMI eq true)";
-          } else {
-            filter += "HomeDesigns/any (h: h/HasQMI eq true)";
-          }
-        }
-
-        //SQFT
-        if (
-          this.filterQuery.minSqFootage != "" &&
-          this.filterQuery.maxSqFootage != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              " and h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              " and h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minSqFootage == "" &&
-          this.filterQuery.maxSqFootage != ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Sqft le " +
-              this.filterQuery.maxSqFootage +
-              ")";
-          }
-        }
-        if (
-          this.filterQuery.minSqFootage != "" &&
-          this.filterQuery.maxSqFootage == ""
-        ) {
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              ")";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/Sqft ge " +
-              this.filterQuery.minSqFootage +
-              ")";
-          }
-        }
-
-        //Move in date
-        if (this.filterQuery.moveInDate != "") {
-          var d = new Date(this.filterQuery.moveInDate);
-          if (filter != "") {
-            filter +=
-              " and HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
-              d.toISOString() +
-              "))";
-          } else {
-            filter +=
-              "HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
-              d.toISOString() +
-              "))";
-          }
-        }
-
-        //Brand Name
-        if (
-          this.filterQuery.brand.length != null &&
-          this.filterQuery.brand.length > 0
-        ) {
-          var br = "";
-
-          for (var b = 0; b < this.filterQuery.brand.length; b++) {
-            br += "'" + this.filterQuery.brand[b] + "'";
-            if (b + 1 < this.filterQuery.brand.length) {
-              br += " OR ";
-            }
-          }
-
-          search.push('CommunityBrandName:("' + br + '")');
-        }
-
-        //Ammenities
-        if (
-          this.filterQuery.amenities.length != null &&
-          this.filterQuery.amenities.length > 0
-        ) {
-          var am = "";
-
-          for (var a = 0; a < this.filterQuery.amenities.length; a++) {
-            am += "'" + this.filterQuery.amenities[a] + "'";
-            if (a + 1 < this.filterQuery.amenities.length) {
-              am += " AND ";
-            }
-          }
-
-          search.push('HomeDesigns/Amenities:("' + am + '")');
-        }
-
-        var searchString = "";
-        var searchFilterString = "";
-
-        if (search != undefined) {
-          for (var j = 0; j < search.length; j++) {
-            searchString += search[j].toString();
-
-            if (j < search.length - 1) {
-              searchString += " AND ";
-            }
-          }
-        }
-
-        if (searchFields != null) {
-          for (var jj = 0; jj < searchFields.length; jj++) {
-            searchFilterString += searchFields[jj].toString();
-
-            if (jj < searchFields.length - 1) {
-              searchFilterString += ", ";
-            }
-          }
-        }
-
-        this.currentSearch = searchString;
-        this.currentSearchFields = searchFilterString;
-        this.currentFilter = filter;
-
-        console.log(search);
-        console.log("search: " + this.currentSearch);
-        console.log("fields: " + this.currentSearchFields);
-        console.log("filter: " + this.currentFilter);
-
-        this.communitiesCurrentPage = 1;
-        this.hdCurrentPage = 1;
-        this.qmiCurrentPage = 1;
-
-        this.GetHomes(
-          this.currentSearch,
-          this.currentSearchFields,
-          filter,
-          "",
-          0
-        );
-
-        this.stopShowing = true;
+        this.filter();
       },
       deep: true,
     },
@@ -1287,17 +932,20 @@ export default {
         }
       },
     },
+    tabIndex: {
+      handler(val) {
+        this.filter();
+      },
+    },
   },
   methods: {
     async SearchAPI(body) {
       var val;
 
+      console.log(searchURL);
+
       await axios
-        .post(
-          "https://ingen-internal-demo.search.windows.net/indexes/khov-feed-data/docs/search?api-version=2020-06-30&search=*",
-          body,
-          { headers }
-        )
+        .post(searchURL, body, { headers })
         .then((response) => {
           if (response.data.value != "") {
             val = response.data;
@@ -1319,7 +967,7 @@ export default {
         orderby: orderBy,
         queryType: "full",
         count: "true",
-        top: 500,
+        top: 50,
         skip: skipNum,
       };
 
@@ -1329,33 +977,21 @@ export default {
 
       if (response != undefined) {
         this.communitiesTotalCount = response["@odata.count"];
+        this.hdTotalCount = response["@odata.count"];
+        this.qmiTotalCount = response["@odata.count"];
+
         this.homes = [];
         this.QMIs = [];
 
         if (response.value != "") {
           var val = response.value;
-          this.communities = val;
 
-          for (var h = 0; h < this.communities.length; h++) {
-            if (this.communities[h].HomeDesigns.length > 0) {
-              for (
-                var hd = 0;
-                hd < this.communities[h].HomeDesigns.length;
-                hd++
-              ) {
-                this.homes.push(this.communities[h].HomeDesigns[hd]);
-
-                if (this.communities[h].HomeDesigns[hd].HasQMI == true) {
-                  for (
-                    var q = 0;
-                    q < this.communities[h].HomeDesigns[hd].QMIs.length;
-                    q++
-                  ) {
-                    this.QMIs.push(this.communities[h].HomeDesigns[hd].QMIs[q]);
-                  }
-                }
-              }
-            }
+          if (this.tabIndex == 0) {
+            this.communities = val;
+          } else if (this.tabIndex == 1) {
+            this.homes = val;
+          } else if (this.tabIndex == 2) {
+            this.QMIs = val;
           }
 
           if (this.filterQuery != null) {
@@ -1370,19 +1006,19 @@ export default {
             );
           }
 
-          if (this.homes != undefined && skipNum == 0) {
-            this.hdTotalCount = this.homes.length;
-          }
-          if (this.QMIs != undefined && skipNum == 0) {
-            this.qmiTotalCount = this.QMIs.length;
-          }
+          // if (this.homes != undefined && skipNum == 0) {
+          //   this.hdTotalCount = this.homes.length;
+          // }
+          // if (this.QMIs != undefined && skipNum == 0) {
+          //   this.qmiTotalCount = this.QMIs.length;
+          // }
 
-          if (isEmpty == false) {
-            this.filterMore(this.homes, "homes");
-            this.filterMore(this.QMIs, "qmis");
-          }
+          // if (isEmpty == false) {
+          //   this.filterMore(this.homes, "homes");
+          //   this.filterMore(this.QMIs, "qmis");
+          // }
 
-          // console.log(this.homes.length);
+          console.log(this.homes.length);
           // console.log(this.QMIs.length);
           // console.log(this.communities.length);
         }
@@ -1398,30 +1034,22 @@ export default {
 
       return meters;
     },
-    openInfo(comData, homeData, qmiData) {
+    openInfo(info) {
       this.visible == false;
-
       this.infoData = null;
-      this.homeData = null;
-      this.qmiData = null;
-
       this.sidebarTabIndex = 0;
-
       this.hasQMIs = false;
 
-      if (comData != null) {
-        for (var i = 0; i < comData.HomeDesigns.length; i++) {
-          if (comData.HomeDesigns[i].HasQMI == true) {
+      if (info != null) {
+        for (var i = 0; i < info.HomeDesigns.length; i++) {
+          if (info.HomeDesigns[i].HasQMI == true) {
             this.hasQMIs = true;
           }
         }
       }
 
-      this.infoData = comData;
-      this.homeData = homeData;
-      this.qmiData = qmiData;
-
-      // this.visible = !this.visible;
+      this.infoType = info.Type;
+      this.infoData = info;
       this.visible = true;
     },
     copy(val) {
@@ -1443,6 +1071,361 @@ export default {
         solid: true,
         variant: variant,
       });
+    },
+    async filter() {
+      this.communities = [];
+      this.homes = [];
+      this.QMIs = [];
+
+      //Start creating search/filters
+      var search = [];
+      var searchFields = [];
+      var filter = "";
+
+      //Tabs
+      if (this.tabIndex == 0) {
+        search.push("Type:(Community) ");
+      } else if (this.tabIndex == 1) {
+        search.push("Type:(HomeDesign) ");
+      } else if (this.tabIndex == 2) {
+        search.push("Type:(QMI) ");
+      }
+
+      //Location
+      if (this.filterQuery.radius != 0) {
+        var long = this.filterQuery.locationLong;
+        var lat = this.filterQuery.locationLat;
+        var miles = await this.ConvertToMeters(this.filterQuery.radius);
+
+        if (filter != "") {
+          filter +=
+            " and geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
+            long +
+            " " +
+            lat +
+            ")') le " +
+            miles;
+        } else {
+          filter +=
+            "geo.distance(CommunitySalesOfficeLocation, geography'POINT(" +
+            long +
+            " " +
+            lat +
+            ")') le " +
+            miles;
+        }
+      } else {
+        if (
+          this.filterQuery.location != null &&
+          this.filterQuery.location != ""
+        ) {
+          if (
+            this.filterQuery.locationCity == null ||
+            this.filterQuery.locationCity == ""
+          ) {
+            this.filterQuery.locationCity = "''";
+          }
+          if (
+            this.filterQuery.locationState == null ||
+            this.filterQuery.locationState == ""
+          ) {
+            this.filterQuery.locationState = "''";
+          }
+          if (
+            this.filterQuery.locationZip == null ||
+            this.filterQuery.locationZip == ""
+          ) {
+            this.filterQuery.locationZip = "''";
+          }
+
+          search.push(
+            "CommunityCity:(" +
+              this.filterQuery.locationCity +
+              ") AND CommunityState:(" +
+              this.filterQuery.locationState +
+              ") AND CommunityZip:(" +
+              this.filterQuery.locationZip +
+              ")"
+          );
+        }
+      }
+
+      //Price Range
+      if (this.filterQuery.minPrice != "" && this.filterQuery.maxPrice != "") {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Price ge " +
+            this.filterQuery.minPrice +
+            " and h/Price le " +
+            this.filterQuery.maxPrice +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Price ge " +
+            this.filterQuery.minPrice +
+            " and h/Price le " +
+            this.filterQuery.maxPrice +
+            ")";
+        }
+      }
+      if (this.filterQuery.minPrice == "" && this.filterQuery.maxPrice != "") {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Price le " +
+            this.filterQuery.maxPrice +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Price le " + this.filterQuery.maxPrice + ")";
+        }
+      }
+      if (this.filterQuery.minPrice != "" && this.filterQuery.maxPrice == "") {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Price ge " +
+            this.filterQuery.minPrice +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Price ge " + this.filterQuery.minPrice + ")";
+        }
+      }
+
+      //Home Type
+      if (
+        this.filterQuery.homeType.length != null &&
+        this.filterQuery.homeType.length > 0
+      ) {
+        var ss = "";
+
+        for (var ii = 0; ii < this.filterQuery.homeType.length; ii++) {
+          ss += "'" + this.filterQuery.homeType[ii] + "'";
+          if (ii + 1 < this.filterQuery.homeType.length) {
+            ss += " OR ";
+          }
+        }
+
+        search.push("HomeDesigns/HomeDesignType:(" + ss + ")");
+      }
+
+      //Bedrooms
+      if (this.filterQuery.bedrooms != "Any") {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Bedrooms ge " +
+            this.filterQuery.bedrooms +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Bedrooms ge " +
+            this.filterQuery.bedrooms +
+            ")";
+        }
+      }
+
+      //Bathrooms
+      if (this.filterQuery.bathrooms != "Any") {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Bathrooms ge " +
+            this.filterQuery.bathrooms +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Bathrooms ge " +
+            this.filterQuery.bathrooms +
+            ")";
+        }
+      }
+
+      //Garages
+      if (this.filterQuery.garages != "Any") {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Garages ge " +
+            this.filterQuery.garages +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Garages ge " +
+            this.filterQuery.garages +
+            ")";
+        }
+      }
+
+      //Stories
+      if (this.filterQuery.stories != "Any") {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Stories ge " +
+            this.filterQuery.stories +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Stories ge " +
+            this.filterQuery.stories +
+            ")";
+        }
+      }
+
+      //Has QMIs
+      if (this.filterQuery.QMIStatus == "yes_QMI") {
+        if (filter != "") {
+          filter += " and HomeDesigns/any (h: h/HasQMI eq true)";
+        } else {
+          filter += "HomeDesigns/any (h: h/HasQMI eq true)";
+        }
+      }
+
+      //SQFT
+      if (
+        this.filterQuery.minSqFootage != "" &&
+        this.filterQuery.maxSqFootage != ""
+      ) {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Sqft ge " +
+            this.filterQuery.minSqFootage +
+            " and h/Sqft le " +
+            this.filterQuery.maxSqFootage +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Sqft ge " +
+            this.filterQuery.minSqFootage +
+            " and h/Sqft le " +
+            this.filterQuery.maxSqFootage +
+            ")";
+        }
+      }
+      if (
+        this.filterQuery.minSqFootage == "" &&
+        this.filterQuery.maxSqFootage != ""
+      ) {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Sqft le " +
+            this.filterQuery.maxSqFootage +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Sqft le " +
+            this.filterQuery.maxSqFootage +
+            ")";
+        }
+      }
+      if (
+        this.filterQuery.minSqFootage != "" &&
+        this.filterQuery.maxSqFootage == ""
+      ) {
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/Sqft ge " +
+            this.filterQuery.minSqFootage +
+            ")";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/Sqft ge " +
+            this.filterQuery.minSqFootage +
+            ")";
+        }
+      }
+
+      //Move in date
+      if (this.filterQuery.moveInDate != "") {
+        var d = new Date(this.filterQuery.moveInDate);
+        if (filter != "") {
+          filter +=
+            " and HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
+            d.toISOString() +
+            "))";
+        } else {
+          filter +=
+            "HomeDesigns/any (h: h/QMIs/any (q: q/QmiMoveInDate le " +
+            d.toISOString() +
+            "))";
+        }
+      }
+
+      //Brand Name
+      if (
+        this.filterQuery.brand.length != null &&
+        this.filterQuery.brand.length > 0
+      ) {
+        var br = "";
+
+        for (var b = 0; b < this.filterQuery.brand.length; b++) {
+          br += "'" + this.filterQuery.brand[b] + "'";
+          if (b + 1 < this.filterQuery.brand.length) {
+            br += " OR ";
+          }
+        }
+
+        search.push('CommunityBrandName:("' + br + '")');
+      }
+
+      //Ammenities
+      if (
+        this.filterQuery.amenities.length != null &&
+        this.filterQuery.amenities.length > 0
+      ) {
+        var am = "";
+
+        for (var a = 0; a < this.filterQuery.amenities.length; a++) {
+          am += "'" + this.filterQuery.amenities[a] + "'";
+          if (a + 1 < this.filterQuery.amenities.length) {
+            am += " AND ";
+          }
+        }
+
+        search.push('HomeDesigns/Amenities:("' + am + '")');
+      }
+
+      var searchString = "";
+      var searchFilterString = "";
+
+      if (search != undefined) {
+        for (var j = 0; j < search.length; j++) {
+          searchString += search[j].toString();
+
+          if (j < search.length - 1) {
+            searchString += " AND ";
+          }
+        }
+      }
+
+      if (searchFields != null) {
+        for (var jj = 0; jj < searchFields.length; jj++) {
+          searchFilterString += searchFields[jj].toString();
+
+          if (jj < searchFields.length - 1) {
+            searchFilterString += ", ";
+          }
+        }
+      }
+
+      this.currentSearch = searchString;
+      this.currentSearchFields = searchFilterString;
+      this.currentFilter = filter;
+
+      console.log(search);
+      console.log("search: " + this.currentSearch);
+      console.log("fields: " + this.currentSearchFields);
+      console.log("filter: " + this.currentFilter);
+
+      this.communitiesCurrentPage = 1;
+      this.hdCurrentPage = 1;
+      this.qmiCurrentPage = 1;
+
+      this.GetHomes(
+        this.currentSearch,
+        this.currentSearchFields,
+        filter,
+        "",
+        0
+      );
+
+      this.stopShowing = true;
     },
     filterMore(homes, type) {
       var other = [];
